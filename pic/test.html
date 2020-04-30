@@ -1,0 +1,29 @@
+<!Doctype html>
+<html>
+<head></head>
+<body>
+	<img src="linux.jpg" />
+	<a href="p1.jpg">p1</a>
+	<a href="p2.jpg">p2</a>
+</body>
+<script>
+		window.onload=function(){
+			function show(which){
+				link = which.href;
+				document.querySelector('img').src=link;
+				return false;
+			}
+			a = document.getElementsByTagName('a');
+			for(var i=0;i<a.length;i++){
+				a[i].onclick=(function(i){
+					return function(){
+						alert(i);
+						show(a[i]);
+						return false;
+					}
+				})(i)
+			}
+				
+		}
+	</script>
+</html>
