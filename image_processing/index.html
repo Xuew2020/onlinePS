@@ -45,9 +45,11 @@
 			<button onclick="image.restore()">撤回</button>
 
 			<button onclick="ImageLayer.download(image,Images)">下载</button>
+			<!-- <button onclick="ImageLayer.download(image,Images)">下载</button> -->
 		</article>
 	</main>
 	<script type="text/javascript" src="ImageLayer.js"></script>
+	<script type="text/javascript" src="TextLayer.js"></script>
 	<script type="text/javascript">
 		var image = null;
 		var Images = [];
@@ -64,7 +66,8 @@
 					console.log(Images);
 				}
 			}
-					
+			
+			image = new TextLayer(document.getElementById('panel'));
 
 		}
 	</script>
