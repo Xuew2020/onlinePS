@@ -39,11 +39,11 @@
 			<button onclick="image.pancil()">画笔</button>
 			<input type="range" name="" min="1" max="100" value="3" step="1" oninput="ImageLayer.setBrushSize(this.value)"> 画笔大小
 			<input type="color" name="" onchange="ImageLayer.setBrushColor(this.value)">画笔颜色
+			<button onclick="textTool()">文本工具</button>
 			<button onclick="image.resolve()">确认</button>
 			<button onclick="image.saveClipArea()">确认剪切</button>
 			<button onclick="image.saveImageMattingArea()">确认抠图</button>
 			<button onclick="image.restore()">撤回</button>
-
 			<button onclick="ImageLayer.download(image,Images)">下载</button>
 			<!-- <button onclick="ImageLayer.download(image,Images)">下载</button> -->
 		</article>
@@ -67,8 +67,11 @@
 				}
 			}
 			
-			image = new TextLayer(document.getElementById('panel'));
+			
 
+		}
+		function textTool(){
+			image = new TextLayer(document.getElementById('panel'));
 		}
 	</script>
 </body>

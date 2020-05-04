@@ -1,4 +1,5 @@
 (function(window){
+	"use strict"  
 	const TEXT_PROXY = document.createElement('textarea');
 
 	/* 代理输入初始化 */
@@ -13,22 +14,25 @@
 		this.y = y;
 	}
 	operPoint.prototype.draw = function(cxt){
+		cxt.save();
 		cxt.beginPath();
 		cxt.arc(this.x,this.y,radius,0,2*Math.PI);
 		cxt.fillStyle = "#ffffff";
 		cxt.closePath();
 		cxt.fill();
 		cxt.stroke();
+		cxt.restore();
 	}
 	operPoint.drawRect = function(canvas,operRect){
 
 		let cxt = canvas.getContext('2d');
-		cxt.clearRect(0,0,canvas.width,canvas.height);
+		// cxt.clearRect(0,0,canvas.width,canvas.height);
 		
-
+		// console.log("drawRect");
 		/********** 画矩形边框 *********/
 		cxt.save();
 		cxt.beginPath();
+		cxt.setLineDash([5]);
 		for(let i=0; i<operRect.length; i++){
 			cxt.lineTo(operRect[i].x,operRect[i].y);
 		}
@@ -41,7 +45,8 @@
 			operRect[i].draw(cxt);
 		}
 	}
-	operPoint.control = function(oldX,oldY,canvas,operRect){
+	operPoint.control = function(oldX,oldY,canvas,textLayer){
+		let operRect = textLayer[PRIVATE.operRect];
 		let pointNum = operRect.length; //顶点数
 		// console.log(operRect);
 		let cxt = canvas.getContext('2d');
@@ -71,7 +76,8 @@
 						operRect[prevIndex].x+=offsetX;
 						operRect[nextIndex].y+=offsetY;
 					}
-					operPoint.drawRect(canvas,operRect);
+					// operPoint.drawRect(canvas,operRect);
+					textLayer[PRIVATE.drawText]();
 				}
 				return true;
 			}
@@ -82,7 +88,7 @@
 		}
 		cxt.closePath();
 		if(cxt.isPointInPath(oldX,oldY)){
-			// console.log("translate");
+
 			canvas.style.cursor = "move";
 			canvas.onmousemove = function(e){
 				e = e || window.event;
@@ -91,26 +97,25 @@
 				let newY = e.clientY - rect.y;
 				let offsetX = newX - oldX;
 				let offsetY = newY - oldY;
-				// console.log(offsetX,offsetY);
 				[oldX,oldY] = [newX,newY];
 				operRect.forEach(function(value,index,array){
 					array[index].x += offsetX;
 					array[index].y += offsetY;
 				});
-				operPoint.drawRect(canvas,operRect);
+				textLayer[PRIVATE.drawText]();
 			}
 			return true;
 		}
 		return false;
 	}
 
-	function resizeRect(canvas,operRect){ // 调整位置及大小
+	function resizeRect(canvas,textLayer){ // 调整位置及大小
 		canvas.onmousedown = function(e){
 			e = e || window.event;
 			let rect = this.getBoundingClientRect();
 			let oldX = e.clientX - rect.x;
 			let oldY = e.clientY - rect.y;
-			operPoint.control(oldX,oldY,canvas,operRect);
+			operPoint.control(oldX,oldY,canvas,textLayer);
 			canvas.onmouseup = function(){
 				this.onmousemove = null;
 				this.style.cursor = "default";
@@ -122,13 +127,18 @@
 		}
 	}
 
+	/************* 属性和方法私有化 *************/
 	const PRIVATE = {
 		words:Symbol("words"),
 		rectInfo:Symbol("rectInfo"),
 		operRect:Symbol("operRect"),
+
+		drawText:Symbol("drawText"),
 	};
 
 
+
+	/************* 文字工具构造函数 *************/
 	function TextLayer(parentNode){
 		this.parentNode = parentNode;
 		this.textArea = document.createElement('canvas');
@@ -181,32 +191,81 @@
 				that[PRIVATE.operRect][2].y = newY;
 				that[PRIVATE.operRect][1].x = newX;
 				that[PRIVATE.operRect][3].y = newY;
-				operPoint.drawRect(this,that[PRIVATE.operRect]);
+				// operPoint.drawRect(this,that[PRIVATE.operRect]);
+				that[PRIVATE.drawText]();
 			}
 			this.onmouseup = function(){
 				this.style.cursor = "default";
 				this.onmousedown = null;
 				this.onmousemove = null;
-				resizeRect(this,that[PRIVATE.operRect]);
+				resizeRect(this,that);
 			}
 			this.onmouseout = function(){
 				this.style.cursor = "default";
 				this.onmousedown = null;
 				this.onmousemove = null;
-				resizeRect(this,that[PRIVATE.operRect]);
+				resizeRect(this,that);
 			}
 
 		}
 		
 		TEXT_PROXY.oninput = function(){
 			that[PRIVATE.words] = this.value;
-			that.drawText();
+			that[PRIVATE.drawText]();
 		}
 	}
+	/************* 文字工具相关属性和方法 *************/
 
-	TextLayer.prototype.drawText = function(){
+	let fontSize = '20px';				// 文字大小
+	let fontFamily = 'sans-serif';		// 字体
+	let textAlign = 'left';				// 对齐方式
+	let padding = 10;
+
+	TextLayer.setFontSize = (value)=>{
+		value = Number.parseInt(value);
+		if(Number.isNaN(value)){
+			return;
+		}
+		fontSize = `${value}px`;
+	}
+	TextLayer.setFontFamliy = (style)=>{
+		fontFamily = style;
+	}
+
+
+	TextLayer.prototype[PRIVATE.drawText] = function(isDrawRect = true){
 		this.textCxt.clearRect(0,0,this.textArea.width,this.textArea.height);
-		this.textCxt.fillText(this[PRIVATE.words],50,50);
+
+		let operRect = this[PRIVATE.operRect];
+		if(isDrawRect){
+			operPoint.drawRect(this.textArea,operRect);
+		}
+		let x = operRect[0].x+padding;
+		let y = operRect[0].y+padding;
+		let rectWidth = operRect[1].x-operRect[0].x-2*padding;
+		// console.log(rectWidth);
+
+		this.textCxt.font = `${fontSize} ${fontFamily}`;
+		this.textCxt.textBaseline = "top";
+		let words = this[PRIVATE.words];
+		let len = words.length;
+		let text = "";
+		for(let i=0; i<len; i++){
+			if(this.textCxt.measureText(text+words[i]).width <= rectWidth){
+				text+=words[i];
+			}
+			else{
+				this.textCxt.fillText(text,x,y);
+				y+=Number.parseInt(fontSize);
+				text = words[i];
+			}
+		}
+		if(text!=""){
+			this.textCxt.fillText(text,x,y);
+		}
+		if(isDrawRect){
+			this.textCxt.fillText('|',x+this.textCxt.measureText(text).width,y);
+		}
 	}
 
 	window.TextLayer = TextLayer;
