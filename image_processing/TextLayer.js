@@ -130,7 +130,6 @@
 	/************* 属性和方法私有化 *************/
 	const PRIVATE = {
 		words:Symbol("words"),
-		rectInfo:Symbol("rectInfo"),
 		operRect:Symbol("operRect"),
 
 		drawText:Symbol("drawText"),
@@ -144,7 +143,6 @@
 		this.textArea = document.createElement('canvas');
 		this.textCxt = this.textArea.getContext('2d');
 		this[PRIVATE.words] = "";		//文字信息
-		this[PRIVATE.rectInfo] = [];	//文本矩形框
 		this[PRIVATE.operRect] = [];	//存放文本矩形边框顶点信息
 
 		/* 初始化 */
@@ -155,12 +153,15 @@
 		this.textArea.style.position = "absolute";
 		this.textArea.style.left = "0";
 		this.textArea.style.top = "0";
+		this.textArea.style.zIndex = "1001";
 
 		this.parentNode.appendChild(TEXT_PROXY);
 		this.parentNode.appendChild(this.textArea);
 
 
 		let that = this;
+		let isMouseMove = false; //鼠标是否在点击后移动
+
 		this.textArea.addEventListener('click',(e)=>{
 			e = e || window.event;
 			let x = e.clientX - this.textArea.offsetLeft;
@@ -192,20 +193,36 @@
 				that[PRIVATE.operRect][1].x = newX;
 				that[PRIVATE.operRect][3].y = newY;
 				// operPoint.drawRect(this,that[PRIVATE.operRect]);
-				that[PRIVATE.drawText]();
+				isMouseMove = true;
+				that[PRIVATE.drawText](true);
 			}
-			this.onmouseup = function(){
+
+			let nextOper = ()=>{
 				this.style.cursor = "default";
 				this.onmousedown = null;
 				this.onmousemove = null;
+
+				if(!isMouseMove){	// 如果没有手动规划出矩形框，就使用自动设置
+					let offset = 100;
+					that[PRIVATE.operRect][2].x += offset;
+					that[PRIVATE.operRect][2].y += offset;
+					that[PRIVATE.operRect][1].x += offset;
+					that[PRIVATE.operRect][3].y += offset;
+					that[PRIVATE.drawText](true);
+				}
+
+				// this.onmouseenter = ()=>{
+				// 	console.log("onmouseenter");
+				// 	that[PRIVATE.drawText](true);
+				// }
+				// this.onmouseleave = ()=>{
+				// 	// console.log("onmouseleave");
+				// 	that[PRIVATE.drawText](false);
+				// }
 				resizeRect(this,that);
-			}
-			this.onmouseout = function(){
-				this.style.cursor = "default";
-				this.onmousedown = null;
-				this.onmousemove = null;
-				resizeRect(this,that);
-			}
+			};
+			this.onmouseup = nextOper;
+			this.onmouseout = nextOper;
 
 		}
 		
@@ -214,25 +231,66 @@
 			that[PRIVATE.drawText]();
 		}
 	}
-	/************* 文字工具相关属性和方法 *************/
+	/************* 文字工具相关配置 *************/
 
+	let fontWeight = 400;				// 文字粗细
 	let fontSize = '20px';				// 文字大小
 	let fontFamily = 'sans-serif';		// 字体
-	let textAlign = 'left';				// 对齐方式
-	let padding = 10;
+	let fontColor = "black";			// 字体颜色
+	let isFill = true;					// 是否填充文字
+	let padding = 10;					// 内边距
 
-	TextLayer.setFontSize = (value)=>{
+
+	TextLayer.setFontWeight = (textLayer,value)=>{
+		if(!(textLayer instanceof TextLayer)){
+			return;
+		}
+		value = Number.parseInt(value);
+		if(Number.isNaN(value)){
+			return;
+		}
+		fontWeight = value;
+		textLayer[PRIVATE.drawText](true);
+	}
+	TextLayer.setFontSize = (textLayer,value)=>{
+		if(!(textLayer instanceof TextLayer)){
+			return;
+		}
 		value = Number.parseInt(value);
 		if(Number.isNaN(value)){
 			return;
 		}
 		fontSize = `${value}px`;
+		textLayer[PRIVATE.drawText](true);
 	}
-	TextLayer.setFontFamliy = (style)=>{
+	TextLayer.setFontFamliy = (textLayer,style)=>{
+		if(!(textLayer instanceof TextLayer)){
+			return;
+		}
 		fontFamily = style;
+		textLayer[PRIVATE.drawText](true);
 	}
+	TextLayer.setFontColor = (textLayer,color)=>{
+		if(!(textLayer instanceof TextLayer)){
+			return;
+		}
+		fontColor = color;
+		textLayer[PRIVATE.drawText](true);
+	}
+	TextLayer.setFontStyle = (textLayer,flag)=>{
+		if(!(textLayer instanceof TextLayer)){
+			return;
+		}
+		isFill = !!Number.parseInt(flag);
+		textLayer[PRIVATE.drawText](true);
+	}
+	TextLayer.getFontWeight = ()=>fontWeight;
+	TextLayer.getFontSize = ()=>fontWeight;
+	TextLayer.getFontFamile = ()=>fontFamily;
+	TextLayer.getFontColor = ()=>fontColor;
 
 
+	/************* 打印文字 *************/
 	TextLayer.prototype[PRIVATE.drawText] = function(isDrawRect = true){
 		this.textCxt.clearRect(0,0,this.textArea.width,this.textArea.height);
 
@@ -240,13 +298,32 @@
 		if(isDrawRect){
 			operPoint.drawRect(this.textArea,operRect);
 		}
+
+		/*** 限制显示范围 ***/
+		this.textCxt.save();
+		this.textCxt.beginPath();
+		operRect.forEach((value)=>{
+			this.textCxt.lineTo(value.x,value.y);
+		})
+		this.textCxt.closePath();
+		this.textCxt.clip();
+
 		let x = operRect[0].x+padding;
 		let y = operRect[0].y+padding;
 		let rectWidth = operRect[1].x-operRect[0].x-2*padding;
 		// console.log(rectWidth);
 
-		this.textCxt.font = `${fontSize} ${fontFamily}`;
+		this.textCxt.font = `${fontWeight} ${fontSize} ${fontFamily}`;
 		this.textCxt.textBaseline = "top";
+		this.textCxt.fillStyle = fontColor;
+		this.textCxt.strokeStyle = fontColor;
+
+		let draw_text = null;
+		if(isFill){	// 填充类型
+			draw_text = this.textCxt.fillText.bind(this.textCxt);
+		}else{
+			draw_text = this.textCxt.strokeText.bind(this.textCxt);
+		}
 		let words = this[PRIVATE.words];
 		let len = words.length;
 		let text = "";
@@ -255,17 +332,42 @@
 				text+=words[i];
 			}
 			else{
-				this.textCxt.fillText(text,x,y);
+				draw_text(text,x,y);
 				y+=Number.parseInt(fontSize);
 				text = words[i];
 			}
 		}
 		if(text!=""){
-			this.textCxt.fillText(text,x,y);
+			draw_text(text,x,y);
 		}
 		if(isDrawRect){
+			// this.textCxt.font = `100 ${fontSize} ${fontFamily}`;
 			this.textCxt.fillText('|',x+this.textCxt.measureText(text).width,y);
 		}
+
+		this.textCxt.restore();
+	}
+
+	/************* 导出图像信息 *************/
+
+	TextLayer.prototype.toImageData = function(){
+		this[PRIVATE.drawText](false);
+		let rectInfo = {};
+		rectInfo.x = this[PRIVATE.operRect][0].x;
+		rectInfo.y = this[PRIVATE.operRect][0].y;
+		rectInfo.width = this[PRIVATE.operRect][1].x - this[PRIVATE.operRect][0].x;
+		rectInfo.height = this[PRIVATE.operRect][2].y - this[PRIVATE.operRect][0].y;
+
+		let image = document.createElement('canvas');
+		let imageCxt = image.getContext('2d');
+		image.width = rectInfo.width;
+		image.height = rectInfo.height;
+		let imageData = this.textCxt.getImageData(rectInfo.x,rectInfo.y,rectInfo.width,rectInfo.height);
+		imageCxt.putImageData(imageData,0,0);
+
+		this.parentNode.removeChild(this.textArea); //移除文本
+
+		return {url:image.toDataURL("image/png"),rectInfo};
 	}
 
 	window.TextLayer = TextLayer;

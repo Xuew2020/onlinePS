@@ -538,7 +538,7 @@
 
 	/************* 定义加载图层相关函数 *************/
 
-	ImageLayer.prototype[PRIVATE.init] = function(){ //初始化图层
+	ImageLayer.prototype[PRIVATE.init] = function(rectInfo){ //初始化图层
 		this.parentNode.appendChild(this.imageArea);
 		this.parentNode.appendChild(this.operArea);
 		this.parentNode.appendChild(GLOBAL_CANVAS);
@@ -546,8 +546,14 @@
 		this.imageArea.style.position = "absolute";
 		this.operArea.style.position = "absolute";
 		let parentPos = this.parentNode.getBoundingClientRect();
-		let x = (parentPos.width - this.imageArea.width)/2;
-		let y = (parentPos.height - this.imageArea.height)/2;
+		let x,y;
+		if(rectInfo === null){
+			x = (parentPos.width - this.imageArea.width)/2;
+			y = (parentPos.height - this.imageArea.height)/2;
+		}else{
+			x = rectInfo.x;
+			y = rectInfo.y;
+		}
 		this[PRIVATE.x] = x;
 		this[PRIVATE.y] = y;
 		this[PRIVATE.saveRectInfo](x,y,this.imageArea.width,this.imageArea.height);
@@ -587,13 +593,13 @@
 		this[PRIVATE.state] = ImageLayer.FREEING;
 	}
 
-	ImageLayer.prototype.load = function(source){ //加载图片资源
+	ImageLayer.prototype.load = function(source,rectInfo=null){ //加载图片资源
 		let img = new Image();
 		img.src = source;
 		img.onload = ()=>{
 			this[PRIVATE.width] = img.width;
 			this[PRIVATE.height] = img.height;
-			this[PRIVATE.init]();
+			this[PRIVATE.init](rectInfo);
 			this.imageCxt.drawImage(img,0,0);
 			this[PRIVATE.store]();
 		};
