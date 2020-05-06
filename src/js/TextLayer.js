@@ -228,7 +228,7 @@
 		
 		TEXT_PROXY.oninput = function(){
 			that[PRIVATE.words] = this.value;
-			that[PRIVATE.drawText]();
+			that[PRIVATE.drawText](true);
 		}
 	}
 	/************* 文字工具相关配置 *************/
@@ -328,13 +328,19 @@
 		let len = words.length;
 		let text = "";
 		for(let i=0; i<len; i++){
-			if(this.textCxt.measureText(text+words[i]).width <= rectWidth){
-				text+=words[i];
-			}
-			else{
+			if(words[i]==='\n'){
 				draw_text(text,x,y);
 				y+=Number.parseInt(fontSize);
-				text = words[i];
+				text = "";
+			}else{
+				if(this.textCxt.measureText(text+words[i]).width <= rectWidth){
+					text+=words[i];
+				}
+				else{
+					draw_text(text,x,y);
+					y+=Number.parseInt(fontSize);
+					text = words[i];
+				}
 			}
 		}
 		if(text!=""){
