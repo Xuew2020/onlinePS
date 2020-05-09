@@ -62,6 +62,8 @@
 				<option value="0">描边</option>
 			</select>
 			<button onclick="toImage()">栅栏化</button>
+
+			<button onclick="rectangle()">绘制矩形</button>
 			<button onclick="image.resolve()">确认</button>
 			<button onclick="image.saveClipArea()">确认剪切</button>
 			<button onclick="image.saveImageMattingArea()">确认抠图</button>
@@ -74,6 +76,7 @@
 	</main>
 	<script type="text/javascript" src="./src/js/ImageLayer.js"></script>
 	<script type="text/javascript" src="./src/js/TextLayer.js"></script>
+	<script type="text/javascript" src="./src/js/GraphLayer.js"></script>
 	<script type="text/javascript">
 		var image = null;
 		var Images = [];
@@ -107,6 +110,11 @@
 			let data = image.toImageData();
 			image = new ImageLayer(document.getElementById('panel'));
 			image.load(data.url,data.rectInfo);	
+		}
+		function rectangle(){
+			image = new GraphLayer(document.getElementById('panel'));
+			image.rectangle();
+			Images.push(image);
 		}
 	</script>
 </body>
