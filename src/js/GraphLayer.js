@@ -8,20 +8,20 @@
 		this.x = x;
 		this.y = y;
 	}
-	operPoint.prototype.draw = function(cxt){
+	operPoint.prototype.draw = function(canvas,r=radius,color = "#ffffff"){
+		let cxt = canvas.getContext('2d');
 		cxt.save();
 		cxt.beginPath();
-		cxt.arc(this.x,this.y,radius,0,2*Math.PI);
-		cxt.fillStyle = "#ffffff";
+		cxt.arc(this.x,this.y,r,0,2*Math.PI);
+		cxt.fillStyle = color;
 		cxt.closePath();
 		cxt.fill();
-		cxt.stroke();
+		// cxt.stroke();
 		cxt.restore();
 	}
+
 	operPoint.drawPath = function(canvas){
 		let cxt = canvas.getContext('2d');
-		cxt.clearRect(0,0,canvas.width,canvas.height);
-
 		cxt.beginPath();
 		PATH.forEach((value)=>{
 			cxt.lineTo(value.x,value.y);
@@ -31,7 +31,7 @@
 		cxt.fill();
 	}
 
-	function move(canvas,check){
+	function move(canvas,check,draw){
 
 		canvas.onmousedown = function(e){
 			let info = this.getBoundingClientRect();
@@ -50,7 +50,9 @@
 						array[index].x += offsetX;
 						array[index].y += offsetY;
 					}); 
-				 	operPoint.drawPath(this);
+	
+				 	this.getContext('2d').clearRect(0,0,this.width,this.height);
+				 	draw(); // 绘制
 				}
 			}
 			this.onmouseup = function(){
@@ -78,6 +80,18 @@
 		return false;
 	}
 
+	function isInCircle(r){
+		return function(canvas,x,y){
+			let cxt = canvas.getContext("2d");
+			cxt.beginPath();
+			cxt.arc(PATH[0].x,PATH[0].y,r,0,2*Math.PI);
+			if(cxt.isPointInPath(x,y)){
+				return true;
+			}else{
+				return false;
+			}
+		}
+	}
 	
 	/************* 属性和方法私有化 *************/
 	const PRIVATE = {
@@ -112,7 +126,6 @@
 		}
 		this[PRIVATE.status] = true;
 		PATH.splice(0,PATH.length);
-		console.log(1);
 		this.graphArea.onmousedown = function(e){
 			let info = this.getBoundingClientRect();
 			e = e || window.event;
@@ -141,13 +154,50 @@
 				this.onmousedown = null;
 				this.onmouseup = null;
 				this.onmouseout = null;
-				move(this,isInPath);
+				move(this,isInPath,operPoint.drawPath.bind(null,this));
 			}
 			this.onmouseup = nextOper;
 			this.onmouseout = nextOper;
-
-
 		}
 	}
+
+	GraphLayer.prototype.circle = function(){	// 圆形
+		if(this[PRIVATE.status] === true){
+			return;
+		}
+		this[PRIVATE.status] = true;
+		PATH.splice(0,PATH.length);
+
+		this.graphArea.onmousedown = function(e){
+			let info = this.getBoundingClientRect();
+			e = e || window.event;
+			let oldX = e.clientX - info.x;
+			let oldY = e.clientY - info.y;
+
+			PATH.push(new operPoint(oldX,oldY));
+
+			let dist = 0;
+			this.onmousemove = function(e){
+				e = e || window.event;
+				let newX = e.clientX - info.x;
+				let newY = e.clientY - info.y;
+				dist = Math.sqrt((newX - oldX)**2+(newY - oldY)**2);	
+				this.getContext('2d').clearRect(0,0,this.width,this.height);
+				PATH[0].draw(this,dist,color);
+			}
+
+			let nextOper = ()=>{
+				this.onmousemove = null;
+				this.onmousedown = null;
+				this.onmouseup = null;
+				this.onmouseout = null;
+				move(this,isInCircle(dist),PATH[0].draw.bind(PATH[0],this,dist,color));
+			}
+			this.onmouseup = nextOper;
+			this.onmouseout = nextOper;
+		}
+	}
+
+	
 	window.GraphLayer = GraphLayer;
 })(window);
