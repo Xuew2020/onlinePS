@@ -65,6 +65,7 @@
 
 			<button onclick="rectangle()">绘制矩形</button>
 			<button onclick="circle()">绘制圆形</button>
+			<button onclick="curveGraph()">自由绘制</button>
 			<button onclick="image.resolve()">确认</button>
 			<button onclick="image.saveClipArea()">确认剪切</button>
 			<button onclick="image.saveImageMattingArea()">确认抠图</button>
@@ -120,6 +121,11 @@
 		function circle(){
 			image = new GraphLayer(document.getElementById('panel'));
 			image.circle();
+			Images.push(image);
+		}
+		function curveGraph(){
+			image = new GraphLayer(document.getElementById('panel'));
+			image.curveGraph();
 			Images.push(image);
 		}
 	</script>

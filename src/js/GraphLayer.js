@@ -198,6 +198,54 @@
 		}
 	}
 
+	GraphLayer.prototype.curveGraph = function(){ //自由绘制曲线图形
+		if(this[PRIVATE.status] === true){
+			return;
+		}
+		this[PRIVATE.status] = true;
+		PATH.splice(0,PATH.length);
+
+		let interval = 3; // 间隔
+		let that = this;
+		this.graphArea.onmousedown = function(e){
+			let info = this.getBoundingClientRect();
+			e = e || window.event;
+			let x = e.clientX - info.x;
+			let y = e.clientY - info.y;
+
+			PATH.push(new operPoint(x,y));
+
+			that.graphCxt.save();
+			that.graphCxt.beginPath();
+
+			that.graphCxt.moveTo(x,y);
+
+			this.onmousemove = function(e){
+				e = e || window.event;
+				let x = e.clientX - info.x;
+				let y = e.clientY - info.y;
+				let dist = Math.sqrt((PATH[PATH.length-1].x - x)**2+(PATH[PATH.length-1].y - y)**2);
+				if(dist>=interval){	
+					PATH.push(new operPoint(x,y));
+					that.graphCxt.lineTo(x,y);
+					that.graphCxt.stroke();
+				}
+			}
+
+			let nextOper = ()=>{
+				this.onmousemove = null;
+				this.onmousedown = null;
+				this.onmouseup = null;
+				this.onmouseout = null;
+				that.graphCxt.clearRect(0,0,this.width,this.height);
+				operPoint.drawPath(this);
+				move(this,isInPath,operPoint.drawPath.bind(null,this));
+			}
+			this.onmouseup = nextOper;
+			this.onmouseout = nextOper;
+		}
+
+	}
 	
 	window.GraphLayer = GraphLayer;
 })(window);
