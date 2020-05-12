@@ -175,6 +175,7 @@
 			let oldY = e.clientY - info.y;
 
 			PATH.push(new operPoint(oldX,oldY));
+			PATH.radius = 0; // 存放半径，输出图形时计算外接矩形
 
 			let dist = 0;
 			this.onmousemove = function(e){
@@ -183,7 +184,9 @@
 				let newY = e.clientY - info.y;
 				dist = Math.sqrt((newX - oldX)**2+(newY - oldY)**2);	
 				this.getContext('2d').clearRect(0,0,this.width,this.height);
+				PATH.radius = dist;
 				PATH[0].draw(this,dist,color);
+
 			}
 
 			let nextOper = ()=>{
@@ -247,5 +250,62 @@
 
 	}
 	
+	GraphLayer.prototype.pen = function(){	//钢笔工具
+
+	}
+
+
+	/************* 导出图像信息 *************/
+
+	GraphLayer.prototype.toImageData = function(){
+		if(this[PRIVATE.status] !== true){
+			return;
+		}
+
+		let margin = 2; //保留边距
+		/** 计算外接矩形 **/
+		let rectInfo = {};
+		if(typeof PATH.radius === "number"){	//圆形的情况
+ 			rectInfo.x = PATH[0].x-PATH.radius;
+			rectInfo.y = PATH[0].y-PATH.radius;
+			rectInfo.width = 2*PATH.radius;
+			rectInfo.height = 2*PATH.radius;
+			delete PATH.radius;
+
+		}else{								//其他图形
+			let minX = this.graphArea.width;
+			let minY = this.graphArea.height;
+			let maxX = 0,maxY = 0;
+
+			PATH.forEach((point)=>{
+				minX = minX<point.x?minX:point.x;
+				minY = minY<point.y?minY:point.y;
+				maxX = maxX>point.x?maxX:point.x;
+				maxY = maxY>point.y?maxY:point.y;
+			});
+			rectInfo.x = minX;
+			rectInfo.y = minY;
+			rectInfo.width = maxX-minX;
+			rectInfo.height = maxY-minY;
+		}
+		/** 补充边距 **/
+		rectInfo.x -= margin;
+		rectInfo.y -= margin;
+		rectInfo.width += 2*margin;
+		rectInfo.height += 2*margin;
+
+		let image = document.createElement('canvas');
+		let imageCxt = image.getContext('2d');
+		image.width = rectInfo.width;
+		image.height = rectInfo.height;
+		let imageData = this.graphCxt.getImageData(rectInfo.x,rectInfo.y,rectInfo.width,rectInfo.height);
+		imageCxt.putImageData(imageData,0,0);
+
+		this.parentNode.removeChild(this.graphArea); //移除图形
+
+		return {url:image.toDataURL("image/png"),rectInfo};
+		
+	}
+
 	window.GraphLayer = GraphLayer;
 })(window);

@@ -106,7 +106,7 @@
 		}
 		function toImage(){
 			// console.log(image.toImageData())
-			if(!(image instanceof TextLayer)){
+			if(!(image instanceof TextLayer) && !(image instanceof GraphLayer)){
 				return;
 			}
 			let data = image.toImageData();
