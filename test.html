@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>图像处理测试页面</title>
+	<meta charset="utf-8">
+	<style type="text/css">
+		#panel{
+			height: 500px;
+			width: 800px;
+			margin: 0 auto;
+			box-shadow: 0 0 5px gray;
+			overflow: hidden;
+
+		}
+		anvas{
+			box-shadow: 0 0 3px gray;
+		}
+	</style>
+</head>
+<body>
+	<main>
+		<svg xmlns="http://www.w3.org/2000/svg" width="5" height="5" viewBox="0 0 5 5"><path fill="#414348" d="M0 0h1v1h-1zM1 1h1v1h-1zM2 2h1v1h-1zM3 3h1v1h-1zM4 4h1v1h-1z"/></svg>
+		<div id="panel"></div>
+		<article>
+			<input type="file" name="File"/>
+			<button id="Filter" onclick="image.filter('invert');">反色滤镜</button>
+			<button id="Filter" onclick="image.filter('grayscale');">黑白滤镜</button>
+			<button id="Filter" onclick="image.filter('blur');">模糊滤镜</button>
+			<button id="Filter" onclick="image.filter('sepia');">复古滤镜</button>
+			<button onclick="image.mosaic('mosaic',10)">马赛克</button>
+			<button onclick="image.eraser(0.3)">橡皮擦</button>
+			<button onclick="ImageLayer.ruler(image,(res)=>console.log(res))">尺子</button>
+			<button onclick="ImageLayer.straw(image,Images,(res)=>document.body.style.background=res)">吸管</button>
+			<input type="range" name="" min="-255" max="255" value="0" oninput="image.filter('brightness',this.value)"> 亮度
+			<input type="range" name="" min="0" step="0.01" max="1" value="1" oninput="image.filter('opacity',this.value)"> 透明度
+			<!-- <input type="range" name="" min="-360" max="360" step="1" value="0" oninput="image.rotate(this.value)"> 旋转 -->
+			<button onclick="image.transform()">图形变换</button>
+			<button onclick="image.clip()">剪切</button>
+			<button onclick="image.imageMatting()">抠图</button>
+			<button onclick="image.pancil()">画笔</button>
+			<input type="range" name="" min="1" max="100" value="3" step="1" oninput="ImageLayer.setBrushSize(this.value)"> 画笔大小
+			<input type="color" name="" oninput="ImageLayer.setBrushColor(this.value);TextLayer.setFontColor(image,this.value)">画笔颜色
+			<button onclick="textTool()">文本工具</button>
+			<select onchange="TextLayer.setFontWeight(image,this.value)">
+				<option value="100">变细</option>
+				<option value="400" selected>正常</option>
+				<option value="900">加粗</option>
+			</select>
+			<select onchange="TextLayer.setFontFamliy(image,this.value)">
+				<option value="sans-serif" selected="">sans-serif</option>
+				<option value="Arial">Arial</option>
+				<option value="Arial Black">Arial Black</option>
+				<option value="Arial Narrow">Arial Narrow</option>
+				<option value="Impact">Impact</option>
+				<option value="Georgia">Georgia</option>
+				<option value="微软雅黑">微软雅黑</option>
+				<option value="宋体">宋体</option>
+				<option value="Times New Roman">Times New Roman</option>
+			</select>
+			<input type="range" min="1" max="100" step="1" value="20" oninput="TextLayer.setFontSize(image,this.value)"> 文字大小
+			<select onchange="TextLayer.setFontStyle(image,this.value)">
+				<option value="1" selected>填充</option>
+				<option value="0">描边</option>
+			</select>
+			<button onclick="toImage()">栅栏化</button>
+
+			<button onclick="rectangle()">绘制矩形</button>
+			<button onclick="circle()">绘制圆形</button>
+			<button onclick="curveGraph()">自由绘制</button>
+			<button onclick="image.resolve()">确认</button>
+			<button onclick="image.saveClipArea()">确认剪切</button>
+			<button onclick="image.saveImageMattingArea()">确认抠图</button>
+			<button onclick="image.restore()">撤回</button>
+			<button onclick="ImageLayer.download(image,Images)">下载</button>
+			<!-- <button onclick="ImageLayer.download(image,Images)">下载</button> -->
+
+
+		</article>
+	</main>
+	<script type="text/javascript" src="./src/js/layer/ImageLayer.js"></script>
+	<script type="text/javascript" src="./src/js/layer/TextLayer.js"></script>
+	<script type="text/javascript" src="./src/js/layer/GraphLayer.js"></script>
+	<script type="text/javascript">
+		var image = null;
+		var Images = [];
+		var top = 0;
+		window.onload = function(){
+			
+			document.querySelector('input[name=File').onchange = function(){
+				let reader = new FileReader();
+				reader.readAsDataURL(this.files[0]);
+				reader.onload = function(){
+					image = new ImageLayer(document.getElementById('panel'));
+					image.load(reader.result);
+					// console.log(reader.result);
+					Images.push(image);
+					console.log(Images);
+				}
+			}
+			
+			
+
+		}
+		function textTool(){
+			image = new TextLayer(document.getElementById('panel'));
+			Images.push(image);
+		}
+		function toImage(){
+			// console.log(image.toImageData())
+			if(!(image instanceof TextLayer) && !(image instanceof GraphLayer)){
+				return;
+			}
+			let data = image.toImageData();
+			image = new ImageLayer(document.getElementById('panel'));
+			image.load(data.url,data.rectInfo);	
+		}
+		function rectangle(){
+			image = new GraphLayer(document.getElementById('panel'));
+			image.rectangle();
+			Images.push(image);
+		}
+		function circle(){
+			image = new GraphLayer(document.getElementById('panel'));
+			image.circle();
+			Images.push(image);
+		}
+		function curveGraph(){
+			image = new GraphLayer(document.getElementById('panel'));
+			image.curveGraph();
+			Images.push(image);
+		}
+	</script>
+</body>
+</html>
