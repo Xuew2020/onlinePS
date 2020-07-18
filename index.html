@@ -4,24 +4,70 @@
 	<title>图像处理</title>
 	<meta charset="utf-8" />
 	<link rel="stylesheet" type="text/css" href="src/css/style.css">
+	<link rel="stylesheet" type="text/css" href="src/css/iconfont.css">
 </head>
 <body>
 	<div id="wrapper">
-		<header id="header"></header>
+		<header id="header">
+			<div id="home">
+				<span class="iconfont">&#xe6e6;</span>
+			</div>
+			<nav id="header-nav">
+				<ul>
+					<li>文件</li>
+					<li>图像</li>
+					<li>工具</li>
+					<li>滤镜</li>
+					<li>模糊</li>
+					<li>更多</li>
+					<!-- <li>保存</li> -->
+				</ul>
+			</nav>
+			<div id="toggle" class="iconfont">&#xe739;</div>
+			<div id="header-logo">TX7238</div>
+		</header>
 		<main id="main">
 			<nav id="main-nav">
-				<div class="splitter" style="position: absolute; top: 0"></div>
-
-				<div class="splitter" style="position: absolute; bottom: 0"></div>
+				<div class="splitter-left" style="position: absolute; top: 0"></div>
+				<ul>
+					<li title="图像变换（平移、旋转、缩放）"><span class="iconfont">&#xe678;</span></li>
+					<li title="图像增强"><span class="iconfont">&#xe65f;</span></li>
+					<li title="剪切"><span class="iconfont">&#xe634;</span></li>
+					<li title="抠图"><span class="iconfont">&#xe683;</span></li>
+					<li title="取色"><span class="iconfont">&#xe64e;</span></li>
+					<li title="画笔"><span class="iconfont">&#xe60d;</span></li>
+					<li title="橡皮擦"><span class="iconfont">&#xe698;</span></li>
+					<li title="尺子"><span class="iconfont">&#xe62c;</span></li>
+					<li title="滤镜"><span class="iconfont">&#xe669;</span></li>
+					<li title="模糊"><span class="iconfont">&#xe62a;</span></li>
+					<li title="文本工具"><span class="iconfont">&#xe601;</span></li>
+					<li title="绘图工具"><span class="iconfont">&#xe606;</span></li>
+				</ul>
 			</nav>
-			<div id="main-content"></div>
+			<div id="main-content">
+				<div id="contains"></div>
+			</div>
 			<div id="main-right">
-				<div class="splitter" style="position: absolute; top: 0"></div>
-
-				<div class="splitter" style="position: absolute; bottom: 0"></div>
+				<div class="splitter-right"></div>
+				<div id="history" class="main-right-contains">
+					<div id="history-header">历史记录</div>
+					<div id="history-content"></div>
+					<div id="history-footer"></div>
+				</div>
+				<div id="layer" class="main-right-contains">
+					<div id="layer-header">图层</div>
+					<div id="layer-content"></div>
+					<div id="layer-footer"></div>
+				</div>
 			</div>
 		</main>
-		<footer id="footer"></footer>
+		<footer id="footer">
+			<div class="splitter-left"></div>
+				<div id="content-info">
+					<!-- <input type="range" name="" min="0" max="100"/> -->
+				</div>
+			<div class="splitter-right"></div>
+		</footer>
 	</div>
 </body>
 </html>
