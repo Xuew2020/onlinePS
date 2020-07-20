@@ -6,7 +6,7 @@
 	<link rel="stylesheet" type="text/css" href="src/css/style.css">
 	<link rel="stylesheet" type="text/css" href="src/css/iconfont.css">
 </head>
-<body>
+<body oncontextmenu="return false" onselectstart ="return false" >
 	<div id="wrapper">
 		<header id="header">
 			<div id="home">
@@ -14,38 +14,86 @@
 			</div>
 			<nav id="header-nav">
 				<ul>
-					<li>文件</li>
-					<li>图像</li>
-					<li>工具</li>
-					<li>滤镜</li>
-					<li>模糊</li>
-					<li>更多</li>
-					<!-- <li>保存</li> -->
+					<li>
+						<span>文件</span>
+						<ul class="nav-sub">
+							<li id="openFile">打开文件</li>
+							<li id="openUrl">从URL打开</li>
+							<li id="saveImage">保存图片</li>
+						</ul>
+					</li>
+					<li>
+						<span>图像</span>
+						<ul class="nav-sub">
+							<li>图像变换</li>
+							<li>图像增强</li>
+						</ul>
+					</li>
+					<li>
+						<span>滤镜</span>
+						<ul class="nav-sub">
+							<li>黑白滤镜</li>
+							<li>反色滤镜</li>
+							<li>复古滤镜</li>
+							<li>模糊滤镜</li>
+						</ul>
+					</li>
+					<li>
+						<span>模糊</span>
+						<ul class="nav-sub">
+							<li>马赛克</li>
+							<li>均值模糊</li>
+							<li>高斯模糊</li>
+						</ul>
+					</li>
+					<li>
+						<span>工具</span>
+						<ul class="nav-sub">
+							<li>剪切</li>
+							<li>抠图</li>
+							<li>画笔</li>
+							<li>尺子</li>
+							<li>橡皮擦</li>
+							<li>吸管工具</li>
+							<li>文本工具</li>
+							<li>绘图工具</li>
+						</ul>
+					</li>
+					<li>
+						<span>设置</span>
+					</li>
 				</ul>
 			</nav>
-			<div id="toggle" class="iconfont">&#xe739;</div>
+			<div id="toggle" class="iconfont"><span style="display: none;">&#xe738;</span><span>&#xe739;</span></div>
 			<div id="header-logo">TX7238</div>
 		</header>
 		<main id="main">
 			<nav id="main-nav">
 				<div class="splitter-left" style="position: absolute; top: 0"></div>
 				<ul>
-					<li title="图像变换（平移、旋转、缩放）"><span class="iconfont">&#xe678;</span></li>
-					<li title="图像增强"><span class="iconfont">&#xe65f;</span></li>
-					<li title="剪切"><span class="iconfont">&#xe634;</span></li>
-					<li title="抠图"><span class="iconfont">&#xe683;</span></li>
-					<li title="取色"><span class="iconfont">&#xe64e;</span></li>
-					<li title="画笔"><span class="iconfont">&#xe60d;</span></li>
-					<li title="橡皮擦"><span class="iconfont">&#xe698;</span></li>
-					<li title="尺子"><span class="iconfont">&#xe62c;</span></li>
-					<li title="滤镜"><span class="iconfont">&#xe669;</span></li>
-					<li title="模糊"><span class="iconfont">&#xe62a;</span></li>
-					<li title="文本工具"><span class="iconfont">&#xe601;</span></li>
-					<li title="绘图工具"><span class="iconfont">&#xe606;</span></li>
+					<li title="图像变换" id="txbh"><span class="iconfont">&#xe678;</span></li>
+					<li title="图像增强" id="txzq"><span class="iconfont">&#xe65f;</span></li>
+					<li title="剪切" id="jq"><span class="iconfont">&#xe634;</span></li>
+					<li title="抠图" id="kt"><span class="iconfont">&#xe683;</span></li>
+					<li title="拾色器" id="ssq"><span class="iconfont">&#xe64e;</span></li>
+					<li title="画笔" id="hb"><span class="iconfont">&#xe60d;</span></li>
+					<li title="橡皮擦" id="xpc"><span class="iconfont">&#xe698;</span></li>
+					<li title="尺子" id="cz"><span class="iconfont">&#xe62c;</span></li>
+					<li title="滤镜" id="lj"><span class="iconfont">&#xe669;</span></li>
+					<li title="模糊" id="mh"><span class="iconfont">&#xe62a;</span></li>
+					<li title="文本工具" id="wbgj"><span class="iconfont">&#xe601;</span></li>
+					<li title="绘图工具" id="htgj"><span class="iconfont">&#xe606;</span></li>
 				</ul>
 			</nav>
 			<div id="main-panel">
 				<div class="splitter-left"></div>
+				<span class="close">×</span>
+				<div id="main-panel-title">图像处理</div>
+				<div id="main-panel-content"></div>
+				<div id="main-panel-oper">
+					<button>取消</button>
+					<button>应用</button>
+				</div>
 			</div>
 			<div id="main-content" onmousewheel="return false">
 				<div id="contains"></div>
@@ -56,20 +104,15 @@
 					<div id="history-header">历史记录</div>
 					<div id="history-content">
 						<ul>
-							<li class="active">剪切</li>
-							<li>剪切</li>
-							<li>剪切</li>
-							<li>剪切</li>
-							<li>剪切</li>
-							<li>剪切</li>
-							<li>剪切</li>
-							<li>剪切</li>
-							<li>剪切</li>
-							<li>剪切</li>
-							<li>剪切</li>
-							<li>剪切</li>
-							<li>剪切</li>
-							<li>剪切</li>
+							<li class="active"><span>截图</span><span class="iconfont">&#xe634;</span></li>
+							<li><span>截图</span><span class="iconfont">&#xe634;</span></li>
+							<li><span>截图</span><span class="iconfont">&#xe634;</span></li>
+							<li><span>截图</span><span class="iconfont">&#xe634;</span></li>
+							<li><span>截图</span><span class="iconfont">&#xe634;</span></li>
+							<li><span>截图</span><span class="iconfont">&#xe634;</span></li>
+							<li><span>截图</span><span class="iconfont">&#xe634;</span></li>
+							<li><span>截图</span><span class="iconfont">&#xe634;</span></li>
+							<li><span>截图</span><span class="iconfont">&#xe634;</span></li>
 						</ul>
 					</div>
 					<div id="history-footer">
@@ -142,7 +185,7 @@
 					<div id="pos-info">X：50&nbsp;&nbsp;&nbsp;&nbsp;Y：50</div>
 					<div id="scale">
 						<span class="iconfont">&#xe6c0;</span>
-						<input type="range" name="range" min="0.1" max="5" step="0.1" value="1" />
+						<input type="range" name="range" min="0.1" max="5" step="0.1" value="0.5" />
 						<span class="iconfont">&#xe684;</span>
 						<input type="text" name="text" value="50%">
 					</div>
@@ -150,23 +193,10 @@
 			<div class="splitter-right toggle-show"></div>
 		</footer>
 	</div>
+	<script type="text/javascript" src="src/js/control.js"></script>
 	<script type="text/javascript">
-		window.onload=function(){
-			document.querySelector('#scale input[type=range]').oninput=function(){
-				let contains = document.querySelector("#contains");
-				let main = document.querySelector("#main-content");
-				if(this.value<=1){
-					contains.style.transformOrigin = "50% 50% 0";
-				}else{
-					contains.style.transformOrigin = "0 0 0";
-				}
-				contains.style.transform = `scale(${this.value})`;
-				main.scrollTo(100000,100000);
-				let height = main.scrollTop/2;
-				let width = main.scrollLeft/2;
-				main.scrollTo(width,height);
-			}
-
+		window.onload = ()=>{
+			pageConfig.bindEvent();
 		}
 	</script>
 </body>
