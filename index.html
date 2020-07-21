@@ -9,6 +9,7 @@
 <body oncontextmenu="return false" onselectstart ="return false" >
 	<div id="wrapper">
 		<header id="header">
+			<input type="file" accept="image/*" name="imageFile" style="display: none;" />
 			<div id="home">
 				<span class="iconfont">&#xe603;</span>
 			</div>
@@ -128,7 +129,31 @@
 							<li class="active">
 								<span class="iconfont show-canvas">&#xe60c;</span>
 								<canvas width="42px" height="26px"></canvas>
-								<div class="canvas-name">666.jpg</div>
+								<div class="canvas-name">111.jpg</div>
+								<span class="iconfont del-canvas">&#xe652;</span>
+							</li>
+							<li>
+								<span class="iconfont show-canvas">&#xe60c;</span>
+								<canvas width="42px" height="26px"></canvas>
+								<div class="canvas-name">222.jpg</div>
+								<span class="iconfont del-canvas">&#xe652;</span>
+							</li>
+							<li>
+								<span class="iconfont show-canvas">&#xe60c;</span>
+								<canvas width="42px" height="26px"></canvas>
+								<div class="canvas-name">333.jpg</div>
+								<span class="iconfont del-canvas">&#xe652;</span>
+							</li>
+							<li>
+								<span class="iconfont show-canvas">&#xe60c;</span>
+								<canvas width="42px" height="26px"></canvas>
+								<div class="canvas-name">444.jpg</div>
+								<span class="iconfont del-canvas">&#xe652;</span>
+							</li>
+							<li>
+								<span class="iconfont show-canvas">&#xe60c;</span>
+								<canvas width="42px" height="26px"></canvas>
+								<div class="canvas-name">555.jpg</div>
 								<span class="iconfont del-canvas">&#xe652;</span>
 							</li>
 							<li>
@@ -140,31 +165,7 @@
 							<li>
 								<span class="iconfont show-canvas">&#xe60c;</span>
 								<canvas width="42px" height="26px"></canvas>
-								<div class="canvas-name">666.jpg</div>
-								<span class="iconfont del-canvas">&#xe652;</span>
-							</li>
-							<li>
-								<span class="iconfont show-canvas">&#xe60c;</span>
-								<canvas width="42px" height="26px"></canvas>
-								<div class="canvas-name">666.jpg</div>
-								<span class="iconfont del-canvas">&#xe652;</span>
-							</li>
-							<li>
-								<span class="iconfont show-canvas">&#xe60c;</span>
-								<canvas width="42px" height="26px"></canvas>
-								<div class="canvas-name">666.jpg</div>
-								<span class="iconfont del-canvas">&#xe652;</span>
-							</li>
-							<li>
-								<span class="iconfont show-canvas">&#xe60c;</span>
-								<canvas width="42px" height="26px"></canvas>
-								<div class="canvas-name">666.jpg</div>
-								<span class="iconfont del-canvas">&#xe652;</span>
-							</li>
-							<li>
-								<span class="iconfont show-canvas">&#xe60c;</span>
-								<canvas width="42px" height="26px"></canvas>
-								<div class="canvas-name">666.jpg</div>
+								<div class="canvas-name">777.jpg</div>
 								<span class="iconfont del-canvas">&#xe652;</span>
 							</li>
 
@@ -181,22 +182,59 @@
 		<footer id="footer">
 			<div class="splitter-left"></div>
 				<div id="content-info">
-					<div id="image-size">1200*1900px @50%</div>
+					<div id="image-size">1200*1900px</div>
 					<div id="pos-info">X：50&nbsp;&nbsp;&nbsp;&nbsp;Y：50</div>
 					<div id="scale">
 						<span class="iconfont">&#xe6c0;</span>
-						<input type="range" name="range" min="0.1" max="5" step="0.1" value="0.5" />
+						<input type="range" name="range" min="0.1" max="5" step="0.1" value="1" />
 						<span class="iconfont">&#xe684;</span>
-						<input type="text" name="text" value="50%">
+						<input type="text" name="text" value="100%">
 					</div>
 				</div>
 			<div class="splitter-right toggle-show"></div>
 		</footer>
 	</div>
-	<script type="text/javascript" src="src/js/control.js"></script>
+	<dialog id="warning">
+		<div class="model">
+			<div class="model-header">
+				<span>警告框</span>
+				<span class="close">×</span>
+			</div>
+			<div class="splitter-right"></div>
+			<div class="model-content">
+				<p>是否删除当前画布？</p>
+			</div>
+			<div class="model-footer">
+				<button>取消</button>
+				<button>确定</button>
+			</div>
+		</div>
+	</dialog>
+	<dialog id="inputUrl">
+		<div class="model">
+			<div class="model-header">
+				<span>打开图像网址</span>
+				<span class="close">×</span>
+			</div>
+			<div class="splitter-right"></div>
+			<div class="model-content">
+				<input type="url" name="imgUrl" placeholder="在此处输入图片链接" />
+			</div>
+			<div class="model-footer">
+				<button>取消</button>
+				<button>加载</button>
+			</div>
+		</div>
+	</dialog>
+	<script type="text/javascript" src="./src/js/layer/ImageLayer.js"></script>
+	<script type="text/javascript" src="./src/js/layer/TextLayer.js"></script>
+	<script type="text/javascript" src="./src/js/layer/GraphLayer.js"></script>
+	<script type="text/javascript" src="src/js/pageConfig.js"></script>
+	<script type="text/javascript" src="src/js/tools.js"></script>
 	<script type="text/javascript">
 		window.onload = ()=>{
 			pageConfig.bindEvent();
+			tools.bindEvent();
 		}
 	</script>
 </body>

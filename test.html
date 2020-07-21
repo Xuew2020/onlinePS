@@ -86,7 +86,7 @@
 		var top = 0;
 		window.onload = function(){
 			
-			document.querySelector('input[name=File').onchange = function(){
+			document.querySelector('input[name=File]').onchange = function(){
 				let reader = new FileReader();
 				reader.readAsDataURL(this.files[0]);
 				reader.onload = function(){

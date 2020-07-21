@@ -5,10 +5,10 @@
  */
 
 let pageConfig = {
-	$ : function(el){
+	$:function(el){
 		return document.querySelectorAll(el);
 	},
-	bindEvent : function(){
+	bindEvent:function(){
 		let that = this;
 
 		/* 页面顶部控件事件绑定 */
@@ -16,6 +16,16 @@ let pageConfig = {
 		// 导航栏事件绑定
 
 		menus = that.$('#header-nav .nav-sub');
+
+		// 文件
+		menus[0].querySelectorAll('li')[0].addEventListener('click',function(){
+			scale_range.value = 1;// 工作区恢复正常比例 
+			scale_range_event();
+			that.$('input[name=imageFile]')[0].click();
+		});
+		menus[0].querySelectorAll('li')[1].addEventListener('click',function(){
+			that.$('#inputUrl')[0].showModal();
+		});
 
 		// 图像 
 		let tx_els = ["#txbh","#txzq"];
@@ -57,6 +67,7 @@ let pageConfig = {
 			icons = that.$("#toggle>span");
 			icons[toggle_flag].style.display = "none";
 			icons[toggle_flag^1].style.display = "inline";
+
 		});
 
 
@@ -65,18 +76,32 @@ let pageConfig = {
 		// 功能面板切换显示
 		that.$('#main-panel span.close')[0].addEventListener('click',function(){
 			that.toggleShow(that.$("#main-panel")[0],"flex");
+			Array.prototype.some.call(that.$('#main-nav>ul>li'),(el)=>{
+				if(el.classList.contains('active')){
+					el.classList.remove('active');
+					return true;
+				}
+			});
 		});
-		that.$('#main-nav>ul>li').forEach((el)=>{
+		that.$('#main-nav>ul>li').forEach((el,index,arrays)=>{
 			el.addEventListener('click',function(){
 				that.$("#main-panel")[0].style.display = "flex";
 				that.$("#main-panel-title")[0].innerText = el.title;
+				Array.prototype.some.call(arrays,(el)=>{
+					if(el.classList.contains('active')){
+						el.classList.remove('active');
+						return true;
+					}
+				});
+				el.classList.add('active');
 			});
 		});
 		that.$('#main-panel-oper>button').forEach((el)=>{
 			el.addEventListener('click',function(){
-				that.toggleShow(that.$("#main-panel")[0],"flex");
+				that.$('#main-panel span.close')[0].click();
 			});
 		});
+
 
 
 		// 选择
@@ -114,7 +139,47 @@ let pageConfig = {
 		});
 
 		// 图层选择
-		that.$('#layer-content>ul>li').forEach(selected);
+		let layer_content = that.$('#layer-content>ul>li');
+		layer_content.forEach(selected);
+
+		that.$('#layer-content .del-canvas').forEach((el)=>{
+			el.addEventListener('click',function(){
+				that.deleteCanvas();
+			});
+		});
+
+		let layer_oper = that.$('#layer-footer .layer-oper');
+		layer_oper[0].addEventListener('click',function(){
+			layer_content = that.$('#layer-content>ul>li');
+			Array.prototype.some.call(layer_content,(el,index,arrays)=>{
+				if(el.classList.contains('active')){
+					if(index==0){
+						return true;
+					}
+					el.parentElement.insertBefore(el,arrays[index-1]);
+					el.scrollIntoViewIfNeeded();
+					return true;
+				};
+			});
+		});
+		layer_oper[2].addEventListener('click',function(){
+			layer_content = that.$('#layer-content>ul>li');
+			Array.prototype.some.call(layer_content,(el,index,arrays)=>{
+				if(el.classList.contains('active')){
+					if(index===layer_content.length-1){
+						return true;
+					}
+					if(index===layer_content.length-2){
+						el.parentElement.appendChild(el);
+					}else{
+						el.parentElement.insertBefore(el,arrays[index+2]);
+					}
+					el.scrollIntoViewIfNeeded();
+					return true;
+				};
+			});
+		});
+
 
 
 		/* 页面底部控件事件绑定 */
@@ -145,10 +210,24 @@ let pageConfig = {
 			scale_range_event();
 		});
 
+		/* 模态框 */
+		let warning = that.$('#warning')[0];
+		that.$('.model .close').forEach((el)=>{
+			el.addEventListener('click',function(){
+				this.parentElement.parentElement.parentElement.close();
+			});
+		});
+
+		that.$('.model-footer>button').forEach((el)=>{
+			el.addEventListener('click',function(){
+				this.parentElement.parentElement.querySelector('.close').click();
+			});
+		});
+
 	},
 
 	/* 切换显示 */
-	toggleShow : function(el,mode){
+	toggleShow:function(el,mode){
 		if(el.style.display === "none"){
 			el.style.display = mode;
 		}else{
@@ -157,13 +236,13 @@ let pageConfig = {
 	},
 
 	/* 工作区缩放 */
-	workSpaceScale : function(value){
+	workSpaceScale:function(value){
 		value = Number.parseFloat(value,10);
 		if(Number.isNaN(value)){
 			return false;
 		}
-		let contains = document.querySelector("#contains");
-		let main = document.querySelector("#main-content");
+		let contains = this.$("#contains")[0];
+		let main = this.$("#main-content")[0];
 		if(value<=1){
 			contains.style.transformOrigin = "50% 50% 0";
 		}else{
@@ -175,5 +254,19 @@ let pageConfig = {
 		let width = main.scrollLeft/2;
 		main.scrollTo(width,height);
 		return true;
-	}
-}
+	},
+
+	/* 显示/隐藏画布 */
+	toggleCanvas:function(el){
+
+
+	},
+
+	/* 删除画布 */
+	deleteCanvas:function(el){
+		this.$('#warning')[0].showModal();
+	},
+
+
+
+};

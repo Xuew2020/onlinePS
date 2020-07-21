@@ -1,3 +1,9 @@
+/**
+ * 在线图像处理页面样式
+ * @author 薛望
+ * 2020/07/15
+ */
+
 *{
 	margin: 0;
 	padding: 0;
@@ -89,7 +95,7 @@ body{
 	top: var(--header-height);
 	left: 0;
 	list-style: none;
-	z-index: 1;
+	z-index: 10000;
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 	padding-bottom: 10px;
@@ -140,6 +146,11 @@ body{
 	font-size: 25px;
 	height: 100%;
 }
+#main-nav>ul>li.active{
+	background-color: rgb(23,23,25);
+	border-left: 3px solid var(--ok-button-color);
+	box-sizing: border-box;
+}
 #main-panel{
 	width: var(--main-panel-width);
 	background-color: var(--theme);
@@ -173,7 +184,7 @@ body{
 	text-align: center;
 	margin-bottom: 15px;
 }
-#main-panel-oper>button{
+#main-panel-oper>button,.model button{
 	line-height: 25px;
 	width: 90px;
 	border: 1px solid var(--cannel-button-color);
@@ -182,16 +193,16 @@ body{
 	color: white;
 	cursor: pointer;
 }
-#main-panel-oper>button:hover{
+#main-panel-oper>button:hover,.model button:hover{
 	opacity: 1;
 }
-#main-panel-oper>button:focus{
+#main-panel-oper>button:focus,.model button:focus{
 	outline: none;
 }
-#main-panel-oper>button:first-child{
+#main-panel-oper>button:first-child,.model button:first-child{
 	background-color: var(--cannel-button-color);
 }
-#main-panel-oper>button:last-child{
+#main-panel-oper>button:last-child,.model button:last-child{
 	background-color: var(--ok-button-color);
 	border: 1px solid var(--ok-button-color);
 	margin-left: 10px;
@@ -201,6 +212,9 @@ body{
 	background-color: rgb(23,23,25);
 	box-sizing: border-box;
 	overflow: scroll;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 div::-webkit-scrollbar{/*滚动条整体样式*/
 	background-color: #202225;
@@ -222,10 +236,11 @@ div::-webkit-scrollbar-track{/*滚动条里面轨道*/
 
 #contains{
 	height: 100%;
-	background-image: url(../../pic/xk.jpg);
+	width: 100%;
+/*	background-image: url(../../pic/xk.jpg);
 	background-size: 100% 100%;
-	background-repeat: no-repeat;
-	transform: scale(0.5);
+	background-repeat: no-repeat;*/
+	/*transform: scale(0.5);*/
 }
 #main-right{
 	width: var(--main-right-width);
@@ -246,6 +261,7 @@ div::-webkit-scrollbar-track{/*滚动条里面轨道*/
 	line-height: 35px;
 	text-align: center;
 	/*border-top: 2px solid #292c31;*/
+	
 }
 .main-right-contains>div:nth-of-type(2){
 	flex: 1;
@@ -338,7 +354,7 @@ div::-webkit-scrollbar-track{/*滚动条里面轨道*/
 	/*justify-content: space-around;*/
 }
 #image-size,#pos-info{
-	width: 150px;
+	width: 120px;
 	text-align: center;
 }
 #scale{
@@ -398,4 +414,77 @@ div::-webkit-scrollbar-track{/*滚动条里面轨道*/
 }
 .close:hover{
 	color: white;
+}
+dialog{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	background-color: var(--theme);
+	border-radius: 8px;
+    box-shadow: 0 0 3px gray;
+	border : 0;
+}
+#warning .model{
+	height: 150px;
+	width: 300px;
+}
+#inputUrl .model{
+	height: 180px;
+	width: 400px;
+}
+#inputUrl .model-content{
+	text-align: center;
+}
+.model{
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	color: var(--text-color);
+}
+.model-header{
+	width: 100%;
+	line-height: 35px;
+	text-indent: 1em;
+}
+.model-header .close{
+	top: 0px;
+}
+.model-content{
+	flex: 1;
+	width: 100%;
+	display: flex;
+	align-items: center;
+}
+.model-content>p{
+	text-indent: 1em;
+}
+.model-footer{
+	height: 36px;
+	width: 100%;
+	text-align: right;
+	padding-right: 10px;
+	box-sizing: border-box;
+}
+.model-footer>button{
+	width: 70px;
+}
+
+input[name=imgUrl]{
+	height: 32px;
+    line-height: 28px;
+    color: #999;
+    background: rgba(0,0,0,.1);
+    border: 2px solid hsla(0,0%,100%,.1);
+    border-radius: 2px;
+    text-indent: 1em;
+    width: 80%;
+    margin: 0 auto;
+}
+input[name=imgUrl]:hover{
+	border: 2px solid hsla(0,0%,100%,.3);
+}
+input[name=imgUrl]:focus{
+	border: 2px solid var(--ok-button-color);
+	outline: 0 ;
 }

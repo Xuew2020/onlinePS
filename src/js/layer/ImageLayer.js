@@ -543,6 +543,7 @@
 		this.parentNode.appendChild(this.operArea);
 		this.parentNode.appendChild(GLOBAL_CANVAS);
 		this.parentNode.style.position = "relative";
+		this.parentNode.style.overflow = "hidden";
 		this.imageArea.style.position = "absolute";
 		this.operArea.style.position = "absolute";
 		let parentPos = this.parentNode.getBoundingClientRect();
