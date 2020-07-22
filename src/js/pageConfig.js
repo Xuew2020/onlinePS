@@ -224,6 +224,19 @@ let pageConfig = {
 			});
 		});
 
+		that.$('#contains')[0].addEventListener('mousemove',function(e){
+			e = e || window.event;
+			let info = this.getBoundingClientRect();
+			let x = e.clientX - info.x;
+			let y = e.clientY - info.y;
+			that.$('#pos-info>span')[0].innerText = x;
+			that.$('#pos-info>span')[1].innerText = y;
+		});
+		that.$('#contains')[0].addEventListener('mouseout',function(e){
+			that.$('#pos-info>span')[0].innerText = 0;
+			that.$('#pos-info>span')[1].innerText = 0;
+		});
+
 	},
 
 	/* 切换显示 */

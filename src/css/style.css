@@ -357,6 +357,14 @@ div::-webkit-scrollbar-track{/*滚动条里面轨道*/
 	width: 120px;
 	text-align: center;
 }
+#pos-info>span{
+	display: inline-block;
+	width: 34px;
+	text-align: center;
+}
+#pos-info>span:first-child{
+	margin-right: 5px;
+}
 #scale{
 	flex: 1;
 	/*align-self: flex-end; */

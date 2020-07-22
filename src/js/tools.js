@@ -26,10 +26,37 @@
 			that.imgLoad(workplace,this.files[0]);
 		});
 
+		// 图像变换
+		that.$("#txbh")[0].addEventListener('click',function(){
+			that.currentImg.transform();
+		});
+
+		// 图像增强
+
+		// 剪切
+
+		// 抠图
+
+		// 拾色器
+
+		// 画笔
+
+		// 橡皮擦
+
+		// 尺子
+
+		// 滤镜
+
+		// 模糊
+
+		// 文本工具
+
+		// 绘图工具
+
 
 	},
 
-	// 加载图片到工作区
+	/* 加载图片到工作区 */
 	imgLoad:function(el,src){
 		let reader = new FileReader();
 		reader.readAsDataURL(src);
@@ -38,6 +65,47 @@
 			this.currentImg.load(reader.result);
 			this.imgArray.push(this.currentImg);
 			// console.log(Images);
+			this.imgAttrListener();
 		}
+	},
+
+	/* 监听图像属性变化 */
+	imgAttrListener:function(){
+
+		Object.defineProperties(this.currentImg.baseInfo,{
+			x:{
+				set:function(value){
+					console.log("x:"+value);
+				}
+			},
+			y:{
+				set:function(value){
+					console.log("y:"+value);
+				}
+			},
+			width:{
+				set:function(value){
+					console.log("width:"+value);
+				}
+			},
+			height:{
+				set:function(value){
+					console.log("height:"+value);
+				}
+			},
+			rotateAngle:{
+				set:function(value){
+					console.log("rotateAngle:"+value);
+				}
+			}
+		});
+
+	},
+
+	// 监听控件样式变换
+	styleListener:function(el,callback){
+		let MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+		let observer = new MutationObserver(callback);
+		observer.observe(el,{attributes:true,attributeFilter:['style'],attributeOldValue:true});
 	}
  };

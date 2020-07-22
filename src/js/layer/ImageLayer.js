@@ -501,6 +501,7 @@
 		this.imageCxt = this.imageArea.getContext('2d'); 	//显示区域画笔
 		this.operCxt = this.operArea.getContext('2d');   	//操作区域画笔
 		this.tempCxt = this.tempArea.getContext('2d');		//临时图像画笔
+		this.baseInfo = {};									//图层外围矩形边框信息、旋转角度 --- 提供图像数据
 		this[PRIVATE.history] = [];			   				//操作记录
 		this[PRIVATE.rectInfo] = {};						//图层外围矩形边框信息
 		this[PRIVATE.state] = ImageLayer.FREEING;			//操作状态
@@ -592,6 +593,9 @@
 		this[PRIVATE.rotateFlag] = true;
 		this[PRIVATE.isClearImageArea] = false;
 		this[PRIVATE.state] = ImageLayer.FREEING;
+
+		/*** 重置旋转角度 ***/
+		this.baseInfo.rotateAngle = 0;
 	}
 
 	ImageLayer.prototype.load = function(source,rectInfo=null){ //加载图片资源
@@ -622,6 +626,11 @@
 		this[PRIVATE.rectInfo].y = y;
 		this[PRIVATE.rectInfo].width = width;
 		this[PRIVATE.rectInfo].height = height;
+		// console.log(this[PRIVATE.rectInfo]);
+		this.baseInfo.x = x;
+		this.baseInfo.y = y;
+		this.baseInfo.width = width;
+		this.baseInfo.height = height;
 	}
 
 	/************* 定义历史记录相关函数 *************/
@@ -826,6 +835,10 @@
 			this.info = JSON.parse(JSON.stringify(this[PRIVATE.rectInfo]));
 			this[PRIVATE.rotateFlag] = false;
 		}
+
+		// 记录旋转角度
+		this.baseInfo.rotateAngle = angle;
+		// console.log(this.baseInfo);
 
 		/***  计算变换后最小外接矩形的长宽 ***/
 		let absAngle = Math.abs(angle%90)*Math.PI/180;
