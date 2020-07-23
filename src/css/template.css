@@ -1,0 +1,48 @@
+/**
+ * 模板样式
+ * @author 薛望
+ * 2020/07/23
+ */
+
+input{
+    color: var(--text-color);
+    background: rgba(0,0,0,.1);
+    border: 2px solid hsla(0,0%,100%,.1);
+    border-radius: 2px;
+    height: 25px;
+    text-align: center;
+}
+/*input:hover{
+	border: 2px solid hsla(0,0%,100%,.3);
+}
+input:focus{
+	border: 2px solid var(--ok-button-color);
+	outline: 0 ;
+}*/
+
+.panel{
+	color: var(--text-color);
+}
+.panel>div{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 30px;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+/* 图形变换 */
+#txhb-panel input[type=number]{
+	width: 80px;
+}
+#txhb-panel input[type=number]::-webkit-inner-spin-button{
+	display: none;
+	height: 20px;
+	width: 8px !important;
+	color: yellow;
+	background-color: yellow;
+}
+/* 图像增强 */
+#txzq-panel>div{
+	margin-bottom: 15px;
+}

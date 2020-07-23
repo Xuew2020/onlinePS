@@ -26,12 +26,89 @@
 			that.imgLoad(workplace,this.files[0]);
 		});
 
+		//	撤销/确定 
+		that.$('#main-panel-oper>button')[0].addEventListener('click',function(){
+			that.currentImg.restore();
+		});
+
+		that.$('#main-panel-oper>button')[1].addEventListener('click',function(){
+			that.currentImg.resolve();
+		});
+
+
+		// 影子根初始化 --- 面板内容
+		let root = that.$("#main-panel-content")[0].attachShadow({mode:'open'});
+		let link = document.createElement("link");
+		link.rel = "stylesheet";
+		link.href = "src/css/template.css";
+		root.appendChild(link);
+
+		// 清理面板
+		function initRoot(){
+			console.log(root.querySelectorAll('.panel'));
+			root.querySelectorAll('.panel').forEach((el)=>{
+				el.style.display = "none";
+			});
+		}
+
 		// 图像变换
+
 		that.$("#txbh")[0].addEventListener('click',function(){
 			that.currentImg.transform();
+
+			// 设置面板内容
+			initRoot();
+
+			let txhb_pannel = root.querySelector("#txhb-panel");
+			let info = that.currentImg.baseInfo; // 图像基本信息
+			if(!txhb_pannel){
+				let template = that.$("#txbh-template")[0];
+				root.appendChild(template.content);
+				template.remove();
+
+				let img_width = root.querySelector("#img-width");
+				let img_height = root.querySelector("#img-height");
+				let rotateAngle = root.querySelector("#rotateAngle");
+				let img_posX = root.querySelector("#img-posX");
+				let img_posY = root.querySelector("#img-posY");
+
+				that.imgAttrListener(img_posX,img_posY,img_width,img_height,rotateAngle);
+
+			}else{
+				txhb_pannel.style.display = "block";
+			}
+			// console.log(info);
+			// root.querySelector("#img-width").value = info.width;
+			// root.querySelector("#img-height").value = info.height;
+			// root.querySelector("#rotateAngle").value = info.rotateAngle;
+			// root.querySelector("#img-posX").value = info.x;
+			// root.querySelector("#img-posY").value = info.y;
 		});
 
 		// 图像增强
+		that.$("#txzq")[0].addEventListener('click',function(){
+			initRoot();
+
+			let txzq_panel = root.querySelector('#txzq-panel');
+			if(!txzq_panel){
+				let template = that.$("#txzq-template")[0];
+				root.appendChild(template.content);
+				template.remove();
+
+				// 亮度
+				root.querySelector("#brightness").addEventListener('input',function(){
+					that.currentImg.filter('brightness',this.value);
+				});
+
+				// 透明度
+				root.querySelector("#opacity").addEventListener('input',function(){
+					that.currentImg.filter('opacity',this.value);
+				});
+
+			}else{
+				txzq_panel.style.display = "block";
+			}
+		});
 
 		// 剪切
 
@@ -64,42 +141,61 @@
 			this.currentImg = new ImageLayer(el);
 			this.currentImg.load(reader.result);
 			this.imgArray.push(this.currentImg);
-			// console.log(Images);
-			this.imgAttrListener();
+		
 		}
 	},
 
 	/* 监听图像属性变化 */
-	imgAttrListener:function(){
+
+	imgAttrListener:function(el_x,el_y,el_width,el_height,el_rotate){
 
 		Object.defineProperties(this.currentImg.baseInfo,{
 			x:{
 				set:function(value){
-					console.log("x:"+value);
+					this._value = value;
+					el_x.value = value;
+				},
+				get:function(){
+					return this._value;
 				}
 			},
 			y:{
 				set:function(value){
-					console.log("y:"+value);
+					this._value = value;
+					el_y.value = value;
+				},
+				get:function(){
+					return this._value;
 				}
 			},
 			width:{
 				set:function(value){
-					console.log("width:"+value);
+					this._value = value;
+					el_width.value = value;
+				},
+				get:function(){
+					return this._value;
 				}
 			},
 			height:{
 				set:function(value){
-					console.log("height:"+value);
+					this._value = value;
+					el_height.value = value;
+				},
+				get:function(){
+					return this._value;
 				}
 			},
 			rotateAngle:{
 				set:function(value){
-					console.log("rotateAngle:"+value);
+					this._value = value;
+					el_rotate.value = value;
+				},
+				get:function(){
+					return this._value;
 				}
 			}
 		});
-
 	},
 
 	// 监听控件样式变换

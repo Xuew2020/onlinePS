@@ -85,6 +85,8 @@ let pageConfig = {
 		});
 		that.$('#main-nav>ul>li').forEach((el,index,arrays)=>{
 			el.addEventListener('click',function(){
+				scale_range.value = 1;// 工作区恢复正常比例 
+				scale_range_event();
 				that.$("#main-panel")[0].style.display = "flex";
 				that.$("#main-panel-title")[0].innerText = el.title;
 				Array.prototype.some.call(arrays,(el)=>{
