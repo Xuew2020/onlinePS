@@ -42,6 +42,10 @@
 		link.rel = "stylesheet";
 		link.href = "src/css/template.css";
 		root.appendChild(link);
+		link = document.createElement("link");
+		link.rel = "stylesheet";
+		link.href = "src/css/iconfont.css";
+		root.appendChild(link);
 
 		// 清理面板
 		function initRoot(){
@@ -87,6 +91,7 @@
 
 		// 图像增强
 		that.$("#txzq")[0].addEventListener('click',function(){
+
 			initRoot();
 
 			let txzq_panel = root.querySelector('#txzq-panel');
@@ -111,14 +116,139 @@
 		});
 
 		// 剪切
+		that.$("#jq")[0].addEventListener('click',function(){
+
+			that.currentImg.clip();
+
+			initRoot();
+			let jq_panel = root.querySelector('#jq-panel');
+
+			if(!jq_panel){
+				let template = that.$("#jq-template")[0];
+				root.appendChild(template.content);
+				template.remove();
+
+				let jq_width = root.querySelector("#jq-width");
+				let jq_height = root.querySelector("#jq-height");
+				let jq_posX = root.querySelector("#jq-posX");
+				let jq_posY = root.querySelector("#jq-posY");
+				that.clipAreaListerner(jq_posX,jq_posY,jq_width,jq_height);
+			}else{
+				jq_panel.style.display = "block";
+			}
+		});
 
 		// 抠图
+		that.$("#kt")[0].addEventListener('click',function(){
+			
+			initRoot();
+			let jq_panel = root.querySelector('#kt-panel');
+
+			if(!jq_panel){
+				let template = that.$("#kt-template")[0];
+				root.appendChild(template.content);
+				template.remove();
+
+				let kts = root.querySelectorAll('#kt-panel>div');
+				let opers = ["imageMatting"];
+				kts.forEach((el,index,arrays)=>{
+					el.addEventListener('click',function(){
+						Array.prototype.some.call(arrays,(el)=>{
+							if(el.classList.contains('active')){
+								el.classList.remove('active');
+								return true;
+							}
+						});
+						el.classList.add("active");
+						that.currentImg[opers[index]]();
+					});
+
+				});
+
+			}else{
+				jq_panel.style.display = "block";
+			}
+		});
 
 		// 拾色器
+		that.$("#ssq")[0].addEventListener('click',function(){
+			
+			initRoot();
+			let ssq_panel = root.querySelector('#ssq-panel');
 
+			if(!ssq_panel){
+				let template = that.$("#ssq-template")[0];
+				root.appendChild(template.content);
+				template.remove();				
+
+			}else{
+				ssq_panel.style.display = "block";
+			}
+			let ssq_posX = root.querySelector("#ssq-posX");
+			let ssq_posY = root.querySelector("#ssq-posY");
+			let ssq_color = root.querySelector("#ssq-color");
+			ImageLayer.straw(that.currentImg,that.imgArray,(x,y,hex)=>{
+				ssq_posX.value = x;
+				ssq_posY.value = y;
+				ssq_color.value = hex;
+			});
+		});
 		// 画笔
+		that.$("#hb")[0].addEventListener('click',function(){
+			
+			that.currentImg.pancil();
+			initRoot();
+
+			let hb_panel = root.querySelector('#hb-panel');
+
+			if(!hb_panel){
+				let template = that.$("#hb-template")[0];
+				root.appendChild(template.content);
+				template.remove();				
+
+				let hb_size = root.querySelector("#hb-size");
+				let hb_color = root.querySelector("#hb-color");
+				hb_size.addEventListener('input',function(){
+					ImageLayer.setBrushSize(this.value);
+				});
+				hb_color.addEventListener('input',function(){
+					ImageLayer.setBrushColor(this.value);
+				});
+
+			}else{
+				hb_panel.style.display = "block";
+			}
+			
+		});
 
 		// 橡皮擦
+		that.$("#xpc")[0].addEventListener('click',function(){
+			
+			that.currentImg.eraser(0.3);
+			initRoot();
+
+			let xpc_panel = root.querySelector('#xpc-panel');
+
+			if(!xpc_panel){
+				let template = that.$("#xpc-template")[0];
+				root.appendChild(template.content);
+				template.remove();				
+
+				let xpc_size = root.querySelector("#xpc-size");
+				let xpc_power = root.querySelector("#xpc-power");
+				xpc_size.addEventListener('input',function(){
+					ImageLayer.setBrushSize(this.value);
+				});
+				xpc_power.addEventListener('change',function(){
+					that.currentImg.resolve();
+					that.currentImg.eraser(1 - this.value);
+				});
+
+			}else{
+				xpc_panel.style.display = "block";
+			}
+			
+		});
 
 		// 尺子
 
@@ -190,6 +320,48 @@
 				set:function(value){
 					this._value = value;
 					el_rotate.value = value;
+				},
+				get:function(){
+					return this._value;
+				}
+			}
+		});
+	},
+
+	//监听截图区域属性变换
+	clipAreaListerner:function(el_x,el_y,el_width,el_height){
+		Object.defineProperties(ImageLayer.globalInfo.clipRect,{
+			x:{
+				set:function(value){
+					this._value = value;
+					el_x.value = value;
+				},
+				get:function(){
+					return this._value;
+				}
+			},
+			y:{
+				set:function(value){
+					this._value = value;
+					el_y.value = value;
+				},
+				get:function(){
+					return this._value;
+				}
+			},
+			width:{
+				set:function(value){
+					this._value = value;
+					el_width.value = value;
+				},
+				get:function(){
+					return this._value;
+				}
+			},
+			height:{
+				set:function(value){
+					this._value = value;
+					el_height.value = value;
 				},
 				get:function(){
 					return this._value;

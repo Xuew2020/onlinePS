@@ -264,7 +264,79 @@
 			</div>
 		</div>
 	</template>
-	<!-- 剪切 -->
+	<!-- 剪切面板 -->
+	<template id="jq-template">
+		<div id="jq-panel" class="panel">
+			<div>
+				<label for="jq-width">截取宽度：</label>
+				<input type="number" id="jq-width" min="0" value="0" disabled />
+			</div>
+			<div>
+				<label for="jq-height">截取长度：</label>
+				<input type="number" id="jq-height" min="0" value="0" disabled/>
+			</div>
+			<div>
+				<label for="jq-posX">截取位置(X)：</label>
+				<input type="number" id="jq-posX" min="0" value="0" disabled/>
+			</div>
+			<div>
+				<label for="jq-posY">截取位置(Y)：</label>
+				<input type="number" id="jq-posY" min="0" value="0" disabled/>
+			</div>
+		</div>
+	</template>
+	<!-- 抠图面板 -->
+	<template id="kt-template">
+		<div id="kt-panel" class="panel">
+			<div>
+				<span class="iconfont icon-koutu ">&nbsp;自由抠图</span>
+			</div>
+		</div>
+	</template>
+	<!-- 拾色器面板 -->
+	<template id="ssq-template">
+		<div id="ssq-panel" class="panel">
+			<div>
+				<label for="ssq-posX">目标位置(X)：</label>
+				<input type="number" id="ssq-posX" min="0" value="0" disabled/>
+			</div>
+			<div>
+				<label for="ssq-posY">目标位置(Y)：</label>
+				<input type="number" id="ssq-posY" min="0" value="0" disabled/>
+			</div>
+			<div>
+				<label for="ssq-color">目标颜色：</label>
+				<input type="color" id="ssq-color"/>
+			</div>
+		</div>
+	</template>
+	<!-- 画笔面板 -->
+	<template id="hb-template">
+		<div id="hb-panel" class="panel">
+			<div>
+				<label for="hb-size">画笔大小：</label>
+				<input type="range" id="hb-size" min="1" max="100" value="3" step="1" />
+			</div>
+			<div>
+				<label for="hb-color">画笔颜色：</label>
+				<input type="color" id="hb-color" value="#ff0000" />
+			</div>
+		</div>
+	</template>
+	<!-- 橡皮擦 -->
+	<template id="xpc-template">
+		<div id="xpc-panel" class="panel">
+			<div>
+				<label for="xpc-size">大小：</label>
+				<input type="range" id="xpc-size" min="1" max="100" value="3" step="1" />
+			</div>
+			<div>
+				<label for="xpc-power">力度：</label>
+				<input type="range" id="xpc-power" min="0" max="1" value="0.7" step="0.1" />
+			</div>
+		</div>
+	</template>
+
 	<script type="text/javascript" src="./src/js/layer/ImageLayer.js"></script>
 	<script type="text/javascript" src="./src/js/layer/TextLayer.js"></script>
 	<script type="text/javascript" src="./src/js/layer/GraphLayer.js"></script>

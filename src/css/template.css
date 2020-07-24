@@ -31,18 +31,52 @@ input:focus{
 	padding-left: 15px;
 	padding-right: 15px;
 }
-/* 图形变换 */
-#txhb-panel input[type=number]{
+input[type=number],input[type=color]{
 	width: 80px;
 }
-#txhb-panel input[type=number]::-webkit-inner-spin-button{
+input[type=number]::-webkit-inner-spin-button{
 	display: none;
 	height: 20px;
 	width: 8px !important;
 	color: yellow;
 	background-color: yellow;
 }
+/* 图形变换 */
+
 /* 图像增强 */
 #txzq-panel>div{
 	margin-bottom: 15px;
+}
+
+/* 剪切 */
+
+/* 抠图 */
+#kt-panel>div{
+	justify-content: center;
+	color: var(--text-color);
+    background: rgba(0,0,0,.1);
+    border: 2px solid hsla(0,0%,100%,.1);
+    border-radius: 2px;
+    text-align: center;
+    margin: 0 auto;
+    line-height: 30px;
+    width: 70%;
+    cursor: pointer;
+}
+#kt-panel>div:hover{
+	border: 2px solid hsla(0,0%,100%,.3);
+}
+#kt-panel>div.active{
+	background-color: var(--ok-button-color);
+	/*color: white;*/
+}
+
+/* 拾色器 */
+
+/* 画笔 */
+#hb-panel>div{
+	margin-bottom: 15px;
+}
+#hb-panel>div>input{
+	width: 120px;
 }

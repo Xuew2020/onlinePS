@@ -11,6 +11,7 @@
 	const GLOBAL_CANVAS = document.createElement('canvas');
 	const GLOBAL_CXT = GLOBAL_CANVAS.getContext('2d');							
 	let isGlobalCanvasInit = false; 					//是否初始化了全局画布
+	ImageLayer.globalInfo = {};							//全局信息 --- 外部使用
 	
 	/********** 图像变换及剪切 *********/
 	let operRect = [];							//存放矩形边框顶点信息
@@ -52,6 +53,15 @@
 		let fistPoint = operRect[0];
 		let rectWidth = operRect[1].x - operRect[0].x;
 		let rectHeight = operRect[3].y - operRect[0].y;
+
+		// 保存矩形宽度
+		ImageLayer.globalInfo.clipRect.x = operRect[0].x;
+		ImageLayer.globalInfo.clipRect.y = operRect[0].y;
+		ImageLayer.globalInfo.clipRect.width = rectWidth;
+		ImageLayer.globalInfo.clipRect.height = rectHeight;
+
+		// console.log(ImageLayer.globalInfo.clipRect);
+
 		// console.log(rectWidth,rectHeight);
 		let widthStep = rectWidth/gridNum;
 		let heightStep = rectHeight/gridNum;
@@ -260,7 +270,16 @@
 			let y = e.clientY - info.y;
 			let imageData = GLOBAL_CXT.getImageData(x,y,1,1).data;
 			let rgba = `rgba(${imageData[0]},${imageData[1]},${imageData[2]},${imageData[3]})`;
-			callback(rgba);
+			let rgb = [];
+			for(let i=0; i<3; i++){
+				let s = imageData[i].toString(16);
+				if(s.length < 2){
+					s+=s;
+				}
+				rgb[i] = s;
+			}
+			let HEX = `#${rgb[0]}${rgb[1]}${rgb[2]}`;
+			callback(x,y,HEX);
 		}
 	}
 
@@ -568,6 +587,12 @@
 			GLOBAL_CANVAS.style.position = "absolute";
 			GLOBAL_CANVAS.style.zIndex = "1000";
 			// GLOBAL_CANVAS.style.display = "none";
+			ImageLayer.globalInfo.clipRect = {
+				x:0,
+				y:0,
+				width:0,
+				height:0,
+			};
 		}
 	}
 
@@ -596,6 +621,13 @@
 
 		/*** 重置旋转角度 ***/
 		this.baseInfo.rotateAngle = 0;
+
+		/*** 重置全局信息 ***/
+		ImageLayer.globalInfo.clipRect.x = 0;
+		ImageLayer.globalInfo.clipRect.y = 0;
+		ImageLayer.globalInfo.clipRect.width = 0;
+		ImageLayer.globalInfo.clipRect.height = 0;
+
 	}
 
 	ImageLayer.prototype.load = function(source,rectInfo=null){ //加载图片资源
@@ -690,6 +722,13 @@
 		if(this[PRIVATE.state] === ImageLayer.FREEING){
 			return;
 		}
+		if(this[PRIVATE.state] === ImageLayer.CLIP){
+			this.saveClipArea();
+		}
+		if(this[PRIVATE.state] === ImageLayer.IMAGEMATTING){
+			console.log("IMAGEMATTING");
+			this.saveImageMattingArea();
+		}
 		if(this[PRIVATE.isClearImageArea] === true){
 			this.imageCxt.clearRect(0,0,this.imageArea.width,this.imageArea.height);
 		}
@@ -716,7 +755,7 @@
 		if(!FILTER.hasOwnProperty(type)){
 			return;
 		}
-		console.log("filter");
+		// console.log("filter");
 		/**
 		 * 缺少路径操作
 		 */
@@ -726,7 +765,9 @@
 		let imageData = this.imageCxt.getImageData(0,0,this.imageArea.width,this.imageArea.height);
 		if(FILTER[type](imageData,value) === true){
 			this.operCxt.putImageData(imageData,0,0);
-			this[PRIVATE.state] = ImageLayer.FILTER;
+			if(!isUseInBrush){
+				this[PRIVATE.state] = ImageLayer.FILTER;
+			}
 			if(type === "opacity" && !isUseInBrush){
 				this[PRIVATE.isClearImageArea] = true;
 			}else{
@@ -977,7 +1018,7 @@
 		this[PRIVATE.y] = info.y + (info.height - rectHeight)/2;
 		this.operArea.style.display = "inline";
 		this.operCxt.putImageData(imageData,0,0);
-		this.resolve(); 
+		// this.resolve(); 
 	}
 
 	ImageLayer.prototype.clip = function(){
@@ -1244,7 +1285,7 @@
 		this.operCxt.drawImage(this.imageArea,0,0);
 		this.operCxt.restore();
 		this[PRIVATE.isClearImageArea] = true;
-		this.resolve();
+		// this.resolve();
 	}
 
 	ImageLayer.prototype.imageMatting = function(){
