@@ -323,7 +323,7 @@
 			</div>
 		</div>
 	</template>
-	<!-- 橡皮擦 -->
+	<!-- 橡皮擦面板 -->
 	<template id="xpc-template">
 		<div id="xpc-panel" class="panel">
 			<div>
@@ -333,6 +333,132 @@
 			<div>
 				<label for="xpc-power">力度：</label>
 				<input type="range" id="xpc-power" min="0" max="1" value="0.7" step="0.1" />
+			</div>
+		</div>
+	</template>
+	<!-- 尺子面板 -->
+	<template id="cz-template">
+		<div id="cz-panel" class="panel">
+			<div>
+				<label for="cz-start">起点坐标：</label>
+				<input type="text" id="cz-start" value="(0,0)" disabled/>
+			</div>
+			<div>
+				<label for="cz-end">终点坐标：</label>
+				<input type="text" id="cz-end" value="(0,0)" disabled/>
+			</div>
+			<div>
+				<label for="cz-dist">长度：</label>
+				<input type="text" id="cz-dist" value="0" disabled/>
+			</div>
+		</div>
+	</template>
+	<!-- 滤镜面板 -->
+	<template id="lj-template">
+		<div id="lj-panel" class="panel">
+			<div>
+				<div class="lj-style">
+					<img src="pic/ah.jpg" alt=""/>
+					<p>黑白</p>
+				</div>
+				<div class="lj-style">
+					<img src="pic/ah.jpg" alt=""/>
+					<p>黑白</p>
+				</div>
+			</div>
+			<div>
+				<div class="lj-style">
+					<img src="pic/ah.jpg" alt=""/>
+					<p>黑白</p>
+				</div>
+				<div class="lj-style">
+					<img src="pic/ah.jpg" alt=""/>
+					<p>黑白</p>
+				</div>
+			</div>
+			<div>
+				<div class="lj-style">
+					<img src="pic/ah.jpg" alt=""/>
+					<p>黑白</p>
+				</div>
+			</div>
+		</div>
+	</template>
+	<!-- 模糊面板 -->
+	<template id="mh-template">
+		<div id="mh-panel" class="panel">
+			<div>
+				<label for="mh-size">画笔大小：</label>
+				<input type="range" id="mh-size" min="1" max="100" value="3" step="1" />
+			</div>
+			<div>
+				<label for="mh-kernel">核大小：</label>
+				<input type="range" id="mh-kernel" min="2" max="100" value="10" step="1" />
+			</div>
+			<div>
+				<span>均值模糊</span>
+			</div>
+			<div>
+				<span>马赛克</span>
+			</div>
+		</div>
+	</template>
+	<!-- 文本工具面板 -->
+	<template id="wbgj-template">
+		<div id="wbgj-panel" class="panel">
+			<div id="wbgj-create">
+				<span>创建文本图层</span>
+			</div>
+			<div>
+				<label for="wbgj-font-family">字体样式：</label>
+				<select id="wbgj-font-family">
+					<option value="sans-serif" selected="">sans-serif</option>
+					<option value="Arial">Arial</option>
+					<option value="Arial Black">Arial Black</option>
+					<option value="Arial Narrow">Arial Narrow</option>
+					<option value="Impact">Impact</option>
+					<option value="Georgia">Georgia</option>
+					<option value="微软雅黑">微软雅黑</option>
+					<option value="宋体">宋体</option>
+					<option value="Times New Roman">Times New Roman</option>
+				</select>
+			</div>
+			<div>
+				<label for="wbgj-font-weight">字体粗细：</label>
+				<select id="wbgj-font-weight">
+					<option value="100">变细</option>
+					<option value="400" selected>正常</option>
+					<option value="900">加粗</option>
+				</select>
+			</div>
+			<div>
+				<label for="wbgj-text-style">文字风格：</label>
+				<select id="wbgj-text-style">
+					<option value="1" selected>填充</option>
+					<option value="0">描边</option>
+				</select>
+			</div>
+			<div>
+				<label for="wbgj-text-size">文字大小：</label>
+				<input type="number" id="wbgj-text-size" min="1" max="100" step="1" value="20">
+			</div>
+			<div>
+				<label for="wbgj-text-color">文字颜色：</label>
+				<input type="color" id="wbgj-text-color" value="#000000" />
+			</div>
+		</div>
+	</template>
+	<!-- 绘图工具面板 -->
+	<template id="htgj-template">
+		<div id="htgj-panel" class="panel">
+			<div>
+				<span class="iconfont icon-juxing">&nbsp;&nbsp;绘制矩形</span>
+			</div>
+			<div>
+				<span class="iconfont icon-yuanxing">&nbsp;&nbsp;绘制圆形</span>
+			</div>
+			<div>
+				<span class="iconfont icon-ziyouhuizhi">&nbsp;&nbsp;自由绘制</span>
 			</div>
 		</div>
 	</template>

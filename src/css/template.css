@@ -12,13 +12,7 @@ input{
     height: 25px;
     text-align: center;
 }
-/*input:hover{
-	border: 2px solid hsla(0,0%,100%,.3);
-}
-input:focus{
-	border: 2px solid var(--ok-button-color);
-	outline: 0 ;
-}*/
+
 
 .panel{
 	color: var(--text-color);
@@ -31,7 +25,7 @@ input:focus{
 	padding-left: 15px;
 	padding-right: 15px;
 }
-input[type=number],input[type=color]{
+input[type=number],input[type=color],input[type=text]{
 	width: 80px;
 }
 input[type=number]::-webkit-inner-spin-button{
@@ -51,7 +45,7 @@ input[type=number]::-webkit-inner-spin-button{
 /* 剪切 */
 
 /* 抠图 */
-#kt-panel>div{
+#kt-panel>div,#htgj-panel>div{
 	justify-content: center;
 	color: var(--text-color);
     background: rgba(0,0,0,.1);
@@ -62,11 +56,12 @@ input[type=number]::-webkit-inner-spin-button{
     line-height: 30px;
     width: 70%;
     cursor: pointer;
+    margin-bottom: 15px;
 }
-#kt-panel>div:hover{
+#kt-panel>div:hover,#htgj-panel>div:hover{
 	border: 2px solid hsla(0,0%,100%,.3);
 }
-#kt-panel>div.active{
+#kt-panel>div.active,#htgj-panel>div.active{
 	background-color: var(--ok-button-color);
 	/*color: white;*/
 }
@@ -79,4 +74,107 @@ input[type=number]::-webkit-inner-spin-button{
 }
 #hb-panel>div>input{
 	width: 120px;
+}
+
+/* 尺子 */
+
+/* 滤镜 */
+#lj-panel>div{
+	margin-bottom: 15px;
+	/*justify-content: space-around;
+	padding: 0;*/
+}
+.lj-style{
+	text-align: center;
+	cursor: pointer;
+}
+.lj-style>img{
+	height: 90px;
+	width: 90px;
+	border-radius: 5px;
+}
+.lj-style>p{
+	margin: 0;
+	font-size: 14px;
+}
+
+/* 模糊 */
+#mh-panel>div{
+	margin-bottom: 10px;
+}
+#mh-panel>div:nth-of-type(n+3){
+	justify-content: center;
+	color: var(--text-color);
+    background: rgba(0,0,0,.1);
+    border: 2px solid hsla(0,0%,100%,.1);
+    border-radius: 2px;
+    text-align: center;
+    margin: 0 auto;
+    line-height: 30px;
+    width: 70%;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+#mh-panel>div:nth-of-type(n+3):hover{
+	border: 2px solid hsla(0,0%,100%,.3);
+}
+#mh-panel>div:nth-of-type(n+3).active{
+	background-color: var(--ok-button-color);
+	/*color: white;*/
+}
+#mh-panel>div>input{
+	width: 120px;
+}
+
+/* 文本工具 */
+/*#wbgj-panel>div{
+	margin-bottom: 10px;
+}*/
+#wbgj-panel>div:nth-of-type(1){
+	justify-content: center;
+	color: var(--text-color);
+    background: rgba(0,0,0,.1);
+    border: 2px solid hsla(0,0%,100%,.1);
+    border-radius: 2px;
+    text-align: center;
+    margin: 0 auto;
+    line-height: 30px;
+    width: 73%;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+#wbgj-panel>div:nth-of-type(1):hover{
+	border: 2px solid hsla(0,0%,100%,.3);
+}
+#wbgj-panel>div:nth-of-type(1).active{
+	background-color: var(--ok-button-color);
+	/*color: white;*/
+}
+#wbgj-panel>div>select{
+	color: var(--text-color);
+    background: rgba(0,0,0,.1);
+    border: 2px solid hsla(0,0%,100%,.1);
+    border-radius: 2px;
+    text-align: center;
+    width: 70%;
+    height: 25px;
+    cursor: pointer;
+}
+#wbgj-panel>div>select option{
+	color: black;
+}
+#wbgj-panel>div>select:hover{
+	border: 2px solid hsla(0,0%,100%,.3);
+}
+#wbgj-panel>div>input,#wbgj-panel>div>select{
+	width: 120px;
+	height: 30px;
+	box-sizing: border-box;
+}
+#wbgj-panel input:hover{
+	border: 2px solid hsla(0,0%,100%,.3);
+}
+#wbgj-panel input:focus{
+	border: 2px solid var(--ok-button-color);
+	outline: 0 ;
 }

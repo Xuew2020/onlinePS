@@ -237,11 +237,20 @@
 			RULER.sy = RULER.dy = e.clientY - info.y;
 			RULER.draw(this);
 
+			ImageLayer.globalInfo.rulerInfo.sx = RULER.sx;
+			ImageLayer.globalInfo.rulerInfo.sy = RULER.sy;
+			ImageLayer.globalInfo.rulerInfo.dx = RULER.dx;
+			ImageLayer.globalInfo.rulerInfo.dy = RULER.dy;
+
+
 			this.onmousemove = function(e){
 				e = e || window.event;
 				RULER.dx = e.clientX - info.x;
 				RULER.dy = e.clientY - info.y;
 				RULER.draw(this);
+
+				ImageLayer.globalInfo.rulerInfo.dx = RULER.dx;
+				ImageLayer.globalInfo.rulerInfo.dy = RULER.dy;
 				callback(RULER.measure());
 			}
 			this.onmouseup = function(){
@@ -400,7 +409,7 @@
 			}
 			return true;
 		},
-		mosaic:function(imageData,value=5){
+		mosaic:function(imageData,value=5){		//马赛克
 			let {data,width,height} = imageData;
 			let size = value;
 			console.log(size,width,height);
@@ -440,7 +449,6 @@
 					}
 				}
 			}
-
 			return true;
 		},
 		brightness:function(imageData,value=0){ //亮度
@@ -593,6 +601,13 @@
 				width:0,
 				height:0,
 			};
+			ImageLayer.globalInfo.rulerInfo = {
+				sx:0,
+				sy:0,
+				dx:0,
+				dy:0,
+			};
+
 		}
 	}
 

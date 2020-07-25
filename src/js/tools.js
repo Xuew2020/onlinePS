@@ -19,6 +19,13 @@
 		let workplace = that.$("#contains")[0];
 		workplace.style.width = workplace.getBoundingClientRect().width+"px";
 		workplace.style.height = workplace.getBoundingClientRect().height+"px";
+
+		// 左侧快捷菜单栏
+		that.$('#main-nav>ul>li').forEach((el,index,arrays)=>{
+			el.addEventListener('click',function(){
+				that.currentImg.restore();
+			});
+		});
 		
 
 		// 打开本地图片
@@ -251,14 +258,170 @@
 		});
 
 		// 尺子
+		that.$("#cz")[0].addEventListener('click',function(){
+			
+			initRoot();
+
+			let cz_panel = root.querySelector('#cz-panel');
+
+			if(!cz_panel){
+				let template = that.$("#cz-template")[0];
+				root.appendChild(template.content);
+				template.remove();				
+
+				let cz_start = root.querySelector("#cz-start");
+				let cz_end = root.querySelector("#cz-end");
+				that.rulerPosListerner(cz_start,cz_end);
+
+			}else{
+				cz_panel.style.display = "block";
+			}
+			let cz_dist = root.querySelector("#cz-dist");
+			ImageLayer.ruler(that.currentImg,(dist)=>{
+				cz_dist.value = dist.toFixed(4);
+			});
+			
+		});
 
 		// 滤镜
 
+		let base_dir = "./pic/";
+		let lj_styles = ["invert","grayscale","blur","sepia","mosaic"];
+		let lj_names = ["反色","黑白","模糊","复古","马赛克"];
+		let lj_imgsrc = ["nb.jpg","nb.jpg","nb.jpg","nb.jpg","nb.jpg"];
+		that.$("#lj")[0].addEventListener('click',function(){
+			
+			initRoot();
+
+			let lj_panel = root.querySelector('#lj-panel');
+
+			if(!lj_panel){
+				let template = that.$("#lj-template")[0];
+				root.appendChild(template.content);
+				template.remove();				
+
+				lj_panel = root.querySelector('#lj-panel');
+				lj_panel.querySelectorAll(".lj-style").forEach((el,index)=>{
+					let img = el.querySelector("img");
+					let name = el.querySelector("p");
+					img.src = base_dir+lj_imgsrc[index];
+					img.alt = lj_names[index];
+					name.textContent = lj_names[index];
+					el.addEventListener('click',function(){
+						that.currentImg.filter(lj_styles[index]);
+					});
+				});
+
+			}else{
+				lj_panel.style.display = "block";
+			}
+			
+		});
+
 		// 模糊
+		let mh_styles = ["blur","mosaic"];
+		that.$("#mh")[0].addEventListener('click',function(){
+			
+			initRoot();
+
+			let mh_panel = root.querySelector('#mh-panel');
+
+			if(!mh_panel){
+				let template = that.$("#mh-template")[0];
+				root.appendChild(template.content);
+				template.remove();				
+
+				let mh_size = root.querySelector("#mh-size");
+				mh_size.addEventListener('input',function(){
+					ImageLayer.setBrushSize(this.value);
+				});
+
+				let mhs = root.querySelectorAll('#mh-panel>div:nth-of-type(n+3)');
+				mhs.forEach((el,index,arrays)=>{
+					el.addEventListener('click',function(){
+						Array.prototype.some.call(arrays,(el,index)=>{
+							if(el.classList.contains('active')){
+								el.classList.remove('active');
+								return true;
+							}
+						});
+						el.classList.add("active");
+						let value = Number.parseInt(root.querySelector("#mh-kernel").value);
+						that.currentImg.mosaic(mh_styles[index],value);
+					});
+				});
+			}else{
+				mh_panel.style.display = "block";
+			}
+			
+		});
 
 		// 文本工具
+		that.$("#wbgj")[0].addEventListener('click',function(){
+
+			initRoot();
+			let wbgj_panel = root.querySelector('#wbgj-panel');
+
+			if(!wbgj_panel){
+				let template = that.$("#wbgj-template")[0];
+				root.appendChild(template.content);
+				template.remove();	
+
+				let wbgj_create = root.querySelector("#wbgj-create");	
+				let wbgj_font_family = root.querySelector("#wbgj-font-family");	
+				let wbgj_font_weight = root.querySelector("#wbgj-font-weight");
+				let wbgj_text_style = root.querySelector("#wbgj-text-style");
+				let wbgj_text_size = root.querySelector("#wbgj-text-size");
+				let wbgj_text_color = root.querySelector("#wbgj-text-color");
+
+				wbgj_create.addEventListener('click',function(){
+					that.textLoad(workplace);
+				});
+				wbgj_font_family.addEventListener('change',function(){
+					TextLayer.setFontFamliy(that.currentImg,this.value);
+				});
+				wbgj_font_weight.addEventListener('change',function(){
+					TextLayer.setFontWeight(that.currentImg,this.value);
+				});
+				wbgj_text_style.addEventListener('change',function(){
+					TextLayer.setFontStyle(that.currentImg,this.value);
+				});
+				wbgj_text_size.addEventListener('input',function(){
+					TextLayer.setFontSize(that.currentImg,this.value);
+				});
+				wbgj_text_color.addEventListener('input',function(){
+					TextLayer.setFontColor(that.currentImg,this.value);
+				});
+
+			}else{
+				wbgj_panel.style.display = "block";
+			}
+		
+		});
 
 		// 绘图工具
+		let htgj_styles = ["rectangle","circle","curveGraph"];
+		that.$("#htgj")[0].addEventListener('click',function(){
+			
+			initRoot();
+			let htgj_panel = root.querySelector('#htgj-panel');
+
+			if(!htgj_panel){
+				let template = that.$("#htgj-template")[0];
+				root.appendChild(template.content);
+				template.remove();	
+
+				root.querySelectorAll('#htgj-panel>div').forEach((el,index)=>{
+					el.addEventListener('click',function(){
+						that.graphLoad(workplace,htgj_styles[index]);
+					});
+				});
+
+			}else{
+				htgj_panel.style.display = "block";
+			}
+			
+		});
 
 
 	},
@@ -273,6 +436,18 @@
 			this.imgArray.push(this.currentImg);
 		
 		}
+	},
+	textLoad:function(el){
+		this.currentImg = new TextLayer(el);
+		this.imgArray.push(this.currentImg);
+	},
+	graphLoad:function(el,type){
+		if(!GraphLayer.prototype.hasOwnProperty(type)){
+			return;
+		}
+		this.currentImg = new GraphLayer(el);
+		this.currentImg[type]();
+		this.imgArray.push(this.currentImg);
 	},
 
 	/* 监听图像属性变化 */
@@ -367,6 +542,48 @@
 					return this._value;
 				}
 			}
+		});
+	},
+
+	/* 监听尺子坐标变换 */
+	rulerPosListerner:function(pos_st,pos_ed){
+		Object.defineProperties(ImageLayer.globalInfo.rulerInfo,{
+			sx:{
+				set:function(value){
+					this._value = value;
+					pos_st.value = pos_st.value.replace(/(?<=\()\d+(?=,)/,value);
+				},
+				get:function(){
+					return this._value;
+				}
+			},
+			sy:{
+				set:function(value){
+					this._value = value;
+					pos_st.value = pos_st.value.replace(/(?<=,)\d+(?=\))/,value);
+				},
+				get:function(){
+					return this._value;
+				}
+			},
+			dx:{
+				set:function(value){
+					this._value = value;
+					pos_ed.value = pos_ed.value.replace(/(?<=\()\d+(?=,)/,value);
+				},
+				get:function(){
+					return this._value;
+				}
+			},
+			dy:{
+				set:function(value){
+					this._value = value;
+					pos_ed.value = pos_ed.value.replace(/(?<=,)\d+(?=\))/,value);
+				},
+				get:function(){
+					return this._value;
+				}
+			},
 		});
 	},
 
