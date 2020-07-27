@@ -426,15 +426,74 @@
 
 	},
 
+	/* 添加图层列表 */
+	addLayer:function(name,mode){
+		let workplace = this.$("#contains")[0];
+		let info = workplace.getBoundingClientRect();
+
+		let imglist = this.$('#layer-content>ul')[0];
+
+		// 创建节点
+		let li = document.createElement('li');
+		li.setAttribute("data-index",this.imgArray.length-1);
+		let showspan = document.createElement("span");
+		showspan.className = "iconfont show-canvas icon-yanjing";
+		let canvas = document.createElement('canvas');
+		canvas.width = 42;
+		canvas.height = 26;
+		this.imageChangeListerner(canvas,info.width,info.height);
+		let div = document.createElement("div");
+		div.className = "canvas-name";
+		div.textContent = name;
+		let delspan = document.createElement("span");
+		delspan.className = "iconfont del-canvas icon-lajitong";
+
+		li.appendChild(showspan);
+		li.appendChild(canvas);
+		li.appendChild(div);
+		li.appendChild(delspan);
+		imglist.insertBefore(li,imglist.firstElementChild);
+
+		// 添加事件
+		let that = this;
+		li.addEventListener('click',function(){
+			that.$('#layer-content>ul>li').forEach((el)=>{
+				el.classList.remove('active');
+			});
+			this.classList.add('active');
+			that.currentImg.restore();
+			that.currentImg = that.imgArray[this.getAttribute('data-index')];
+		});
+		showspan.addEventListener('click',function(e){
+			e = e || window.event;
+			e.stopPropagation();
+			let container = that.imgArray[this.parentElement.getAttribute("data-index")].container;
+			if(container.style.display !== "none"){
+				container.style.display = "none";
+				this.style.color = "#9E9E9E";
+			}else{
+				container.style.display = "block";
+				this.style.color = "white";
+			}
+		});
+		delspan.addEventListener('click',function(){
+			e.stopPropagation();
+			that.$('#warning')[0].showModal();
+		});
+		li.click();
+	},
+
 	/* 加载图片到工作区 */
 	imgLoad:function(el,src){
+
 		let reader = new FileReader();
 		reader.readAsDataURL(src);
 		reader.onload = ()=>{
 			this.currentImg = new ImageLayer(el);
 			this.currentImg.load(reader.result);
 			this.imgArray.push(this.currentImg);
-		
+			this.addLayer(src.name);
+			// this.historyListerner(null);
 		}
 	},
 	textLoad:function(el){
@@ -584,6 +643,33 @@
 					return this._value;
 				}
 			},
+		});
+	},
+
+	// 监听图像变化
+	imageChangeListerner:function(el,width,height){
+		let canvas = document.createElement('canvas');
+		canvas.width = width;
+		canvas.height = height;
+		let cxt = canvas.getContext("2d");
+		let el_cxt = el.getContext("2d");
+		Object.defineProperty(this.currentImg.baseInfo,'imageData',{
+			set:function(value){
+				// console.log(value);
+				cxt.clearRect(0,0,width,height);
+				cxt.putImageData(value.imageData,value.position.x,value.position.y);
+				el_cxt.clearRect(0,0,el.width,el.height);
+				el_cxt.drawImage(canvas,0,0,el.width,el.height);
+			}
+		});
+	},
+
+	// 监听操作记录
+	historyListerner:function(el){
+		Object.defineProperty(this.currentImg.baseInfo.history,'length',{
+			set:function(value){
+				console.log(value);
+			}
 		});
 	},
 

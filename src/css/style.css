@@ -316,6 +316,7 @@ div::-webkit-scrollbar-track{/*滚动条里面轨道*/
 	flex: 1;
 }
 #layer-content>ul>li{
+	height: 50px;
 	line-height: 50px;
 	color: white;
 	display: flex;

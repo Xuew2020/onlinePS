@@ -141,18 +141,12 @@ let pageConfig = {
 		});
 
 		// 图层选择
-		let layer_content = that.$('#layer-content>ul>li');
-		layer_content.forEach(selected);
-
-		that.$('#layer-content .del-canvas').forEach((el)=>{
-			el.addEventListener('click',function(){
-				that.deleteCanvas();
-			});
-		});
 
 		let layer_oper = that.$('#layer-footer .layer-oper');
 		layer_oper[0].addEventListener('click',function(){
 			layer_content = that.$('#layer-content>ul>li');
+			layer = that.$('#contains>div');
+			let layer_num = layer.length-1;
 			Array.prototype.some.call(layer_content,(el,index,arrays)=>{
 				if(el.classList.contains('active')){
 					if(index==0){
@@ -160,12 +154,20 @@ let pageConfig = {
 					}
 					el.parentElement.insertBefore(el,arrays[index-1]);
 					el.scrollIntoViewIfNeeded();
+					let i = layer_num - index;
+					if(i===layer_content.length-2){
+						layer[i].parentElement.appendChild(layer[i]);
+					}else{
+						layer[i].parentElement.insertBefore(layer[i],layer[i+2]);
+					}
 					return true;
 				};
 			});
 		});
 		layer_oper[2].addEventListener('click',function(){
 			layer_content = that.$('#layer-content>ul>li');
+			layer = that.$('#contains>div');
+			let layer_num = layer.length-1;
 			Array.prototype.some.call(layer_content,(el,index,arrays)=>{
 				if(el.classList.contains('active')){
 					if(index===layer_content.length-1){
@@ -177,6 +179,8 @@ let pageConfig = {
 						el.parentElement.insertBefore(el,arrays[index+2]);
 					}
 					el.scrollIntoViewIfNeeded();
+					let i = layer_num - index;
+					layer[i].parentElement.insertBefore(layer[i],layer[i-1]);
 					return true;
 				};
 			});
@@ -271,16 +275,6 @@ let pageConfig = {
 		return true;
 	},
 
-	/* 显示/隐藏画布 */
-	toggleCanvas:function(el){
-
-
-	},
-
-	/* 删除画布 */
-	deleteCanvas:function(el){
-		this.$('#warning')[0].showModal();
-	},
 
 
 

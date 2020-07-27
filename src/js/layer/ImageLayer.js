@@ -521,6 +521,7 @@
 	/************* 定义图层构造函数 *************/
 	function ImageLayer(parentNode){ 
 		this.parentNode = parentNode;  						//父节点
+		this.container = document.createElement('div'); 	//图像容器
 		this.imageArea = document.createElement('canvas'); 	//图像显示区域
 		this.operArea = document.createElement('canvas');  	//图像操作区域
 		this.tempArea = document.createElement('canvas');   //临时图像区域
@@ -567,9 +568,9 @@
 	/************* 定义加载图层相关函数 *************/
 
 	ImageLayer.prototype[PRIVATE.init] = function(rectInfo){ //初始化图层
-		this.parentNode.appendChild(this.imageArea);
-		this.parentNode.appendChild(this.operArea);
-		this.parentNode.appendChild(GLOBAL_CANVAS);
+		this.container.appendChild(this.imageArea);
+		this.container.appendChild(this.operArea);
+		this.parentNode.appendChild(this.container);
 		this.parentNode.style.position = "relative";
 		this.parentNode.style.overflow = "hidden";
 		this.imageArea.style.position = "absolute";
@@ -588,6 +589,7 @@
 		this[PRIVATE.saveRectInfo](x,y,this.imageArea.width,this.imageArea.height);
 
 		if(isGlobalCanvasInit === false){ //第一次初始化，初始化全局画布
+			this.parentNode.appendChild(GLOBAL_CANVAS);
 			isGlobalCanvasInit = true;
 			let parentInfo = this.parentNode.getBoundingClientRect();
 			GLOBAL_CANVAS.width = parentInfo.width;
@@ -691,13 +693,18 @@
 		 *	1、data对象保存当前图像信息及位移
 		 *	2、更新当前图像信息并将图像备份到临时区域
 		 */
+		let state = this[PRIVATE.state];
+		
 		let data = {
 			imageData:this.imageCxt.getImageData(0,0,this.imageArea.width,this.imageArea.height),
 			position:{x:this.imageArea.offsetLeft,y:this.imageArea.offsetTop},
+			state:state,
 		}
 		this[PRIVATE.history].push(data);
 		this[PRIVATE.saveRectInfo](data.position.x,data.position.y,this.imageArea.width,this.imageArea.height);
 		this[PRIVATE.saveImage](); // 将当前图像在临时区域备份
+
+		this.baseInfo.imageData = this[PRIVATE.history][this.getHistoryLength()-1];
 	}
 
 	ImageLayer.prototype.restore = function(index = this[PRIVATE.history].length-1){ //退回到第index次操作
@@ -708,6 +715,10 @@
 		 *	4、重置所有相关标记
 		 */
 		if(!Number.isInteger(index) || index<0 || index>= this[PRIVATE.history].length){
+			return;
+		}
+		if(this[PRIVATE.state] === ImageLayer.FREEING){
+			console.log("误操作");
 			return;
 		}
 		let data = this[PRIVATE.history][index];
