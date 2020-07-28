@@ -588,6 +588,8 @@
 		this[PRIVATE.y] = y;
 		this[PRIVATE.saveRectInfo](x,y,this.imageArea.width,this.imageArea.height);
 
+		this.baseInfo.historyLength = 0;
+
 		if(isGlobalCanvasInit === false){ //第一次初始化，初始化全局画布
 			this.parentNode.appendChild(GLOBAL_CANVAS);
 			isGlobalCanvasInit = true;
@@ -683,6 +685,9 @@
 	}
 
 	/************* 定义历史记录相关函数 *************/
+	ImageLayer.prototype.getHistory = function(){
+		return this[PRIVATE.history];
+	}
 
 	ImageLayer.prototype.getHistoryLength = function(){ //获取操作记录长度
 		return this[PRIVATE.history].length;
@@ -704,6 +709,7 @@
 		this[PRIVATE.saveRectInfo](data.position.x,data.position.y,this.imageArea.width,this.imageArea.height);
 		this[PRIVATE.saveImage](); // 将当前图像在临时区域备份
 
+		this.baseInfo.historyLength = this.getHistoryLength();
 		this.baseInfo.imageData = this[PRIVATE.history][this.getHistoryLength()-1];
 	}
 
@@ -717,10 +723,7 @@
 		if(!Number.isInteger(index) || index<0 || index>= this[PRIVATE.history].length){
 			return;
 		}
-		if(this[PRIVATE.state] === ImageLayer.FREEING){
-			console.log("误操作");
-			return;
-		}
+		
 		let data = this[PRIVATE.history][index];
 		this.operCxt.clearRect(0,0,this.operArea.width,this.operArea.height);
 		this[PRIVATE.x] = data.position.x;

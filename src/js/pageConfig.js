@@ -106,35 +106,28 @@ let pageConfig = {
 
 
 
-		// 选择
-		let selected = (el,index,arrays)=>{
-			el.addEventListener('click',function(){
-				arrays.forEach((el)=>{
-					el.classList.remove('active');
-				});
-				el.classList.add('active');
-			});
-		};
 		//历史记录选择
-		let history_content = that.$('#history-content>ul>li');
 		let history_oper = that.$(".history-oper");
-		history_content.forEach(selected);
 		history_oper[0].addEventListener('click',function(){
+			let history_content = that.$('#history-content>ul>li');
 			Array.prototype.some.call(history_content,(el,index,arrays)=>{
 				if(index!==0 && el.classList.contains('active')){
 					el.classList.remove('active');
 					arrays[index-1].classList.add('active');
 					arrays[index-1].scrollIntoViewIfNeeded();
+					arrays[index-1].click();
 					return true;
 				};
 			});
 		});
 		history_oper[1].addEventListener('click',function(){
+			let history_content = that.$('#history-content>ul>li');
 			Array.prototype.some.call(history_content,(el,index,arrays)=>{
 				if(index!==history_content.length-1 && el.classList.contains('active')){
 					el.classList.remove('active');
 					arrays[index+1].classList.add('active');
 					arrays[index+1].scrollIntoViewIfNeeded();
+					arrays[index+1].click();
 					return true;
 				};
 			});

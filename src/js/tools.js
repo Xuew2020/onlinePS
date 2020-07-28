@@ -7,6 +7,7 @@
  let tools = {
  	imgArray:[],			//图层数组
  	currentImg:null,		//当前选中的图层
+ 	currentOper:null,
 
  	$ : function(el){
 		return document.querySelectorAll(el);
@@ -24,6 +25,7 @@
 		that.$('#main-nav>ul>li').forEach((el,index,arrays)=>{
 			el.addEventListener('click',function(){
 				that.currentImg.restore();
+				that.currentOper = index;
 			});
 		});
 		
@@ -463,6 +465,8 @@
 			this.classList.add('active');
 			that.currentImg.restore();
 			that.currentImg = that.imgArray[this.getAttribute('data-index')];
+			that.clearHistoryList();
+			that.addHistory(that.currentImg.getHistory());
 		});
 		showspan.addEventListener('click',function(e){
 			e = e || window.event;
@@ -476,11 +480,92 @@
 				this.style.color = "white";
 			}
 		});
-		delspan.addEventListener('click',function(){
+		delspan.addEventListener('click',function(e){
+			e = e || window.event;
 			e.stopPropagation();
 			that.$('#warning')[0].showModal();
 		});
 		li.click();
+	},
+
+	/* 添加操作记录 */
+	addHistory:function(history){
+		// <li><span>截图</span><span class="iconfont">&#xe634;</span></li>
+		let historyList = this.$('#history-content>ul')[0];
+		let currentHistory = this.$('#history-content>ul>li');
+		let historyLength = history.length;
+		let currentHistoryLength = currentHistory.length;
+	
+		let opers = {
+			"freeing":{"name":"创建图层","icon":"icon-jiahaozengjia"},
+			"filter":{"name":"滤镜","icon":"icon-lvjing1"},
+			"transform":{"name":"图像变换","icon":"icon-yidong"},
+			"clip":{"name":"裁剪","icon":"icon-jietu"},
+			"pancil":{"name":"画笔","icon":"icon-huabi1"},
+			"mosaic":{"name":"模糊","icon":"icon-lvjing"},
+			"eraser":{"name":"橡皮擦","icon":"icon-xiangpica"},
+			"ruler":{"name":"尺子","icon":"icon-chizi"},
+			"straw":{"name":"拾色器","icon":"icon-xiguan"},
+			"imagematting":{"name":"抠图","icon":"icon-koutu"},
+			"1":{"name":"图像增强","icon":"icon-tiaozheng"}, // 图像增强
+		};
+
+		let that = this;
+
+		// 创建记录
+		function create(data,index){
+
+			let li = document.createElement("li");
+			let spanName = document.createElement("span");
+			let spanIcon = document.createElement("span");
+			if(that.currentOper === 1){
+				spanName.textContent = opers["1"].name;
+				spanIcon.className = `iconfont ${opers["1"].icon}`;
+			}else{
+				spanName.textContent = opers[data.state].name;
+				spanIcon.className = `iconfont ${opers[data.state].icon}`;
+			}
+
+			li.appendChild(spanName);
+			li.appendChild(spanIcon);
+			historyList.appendChild(li);
+
+			// 添加事件
+			// 选择 this.$('history-content>ul>li')
+
+			li.addEventListener('click',function(){
+				that.$('#history-content>ul>li').forEach((el)=>{
+					el.classList.remove('active');
+				});
+				this.classList.add('active');
+
+				that.currentImg.restore(index);
+
+			});
+		}
+
+		if(historyLength<currentHistoryLength){ // 清除多余历史记录
+			for(let i=historyLength; i<currentHistoryLength; i++){
+				currentHistory[i].remove();
+			}
+		}else{
+			for(let i=currentHistoryLength; i<historyLength; i++){
+				create(history[i],i);
+				if(i == historyLength-1){
+					this.$('#history-content>ul>li')[i].click();
+					this.$('#history-content>ul>li')[i].scrollIntoViewIfNeeded();
+				}
+			}
+		}
+
+	},
+
+	clearHistoryList:function(){
+		let historyList = this.$('#history-content>ul')[0];
+		while(historyList.hasChildNodes()) 
+	　　{
+			historyList.removeChild(historyList.firstChild);
+	　　}
 	},
 
 	/* 加载图片到工作区 */
@@ -492,8 +577,9 @@
 			this.currentImg = new ImageLayer(el);
 			this.currentImg.load(reader.result);
 			this.imgArray.push(this.currentImg);
-			this.addLayer(src.name);
-			// this.historyListerner(null);
+			this.addLayer(src.name,1);
+			this.clearHistoryList();
+			this.historyListerner();
 		}
 	},
 	textLoad:function(el){
@@ -665,18 +751,14 @@
 	},
 
 	// 监听操作记录
-	historyListerner:function(el){
-		Object.defineProperty(this.currentImg.baseInfo.history,'length',{
+	historyListerner:function(){
+		let that = this;
+		Object.defineProperty(this.currentImg.baseInfo,'historyLength',{
 			set:function(value){
-				console.log(value);
+				// console.log(value);
+				that.addHistory(that.currentImg.getHistory());
 			}
 		});
 	},
 
-	// 监听控件样式变换
-	styleListener:function(el,callback){
-		let MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
-		let observer = new MutationObserver(callback);
-		observer.observe(el,{attributes:true,attributeFilter:['style'],attributeOldValue:true});
-	}
  };

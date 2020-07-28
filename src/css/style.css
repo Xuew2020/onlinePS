@@ -243,6 +243,7 @@ div::-webkit-scrollbar-track{/*滚动条里面轨道*/
 	background-size: 100% 100%;
 	background-repeat: no-repeat;*/
 	/*transform: scale(0.5);*/
+	margin: 0 auto;
 }
 #main-right{
 	width: var(--main-right-width);
