@@ -140,7 +140,8 @@
 	/************* 文字工具构造函数 *************/
 	function TextLayer(parentNode){
 		this.parentNode = parentNode;
-		this.textArea = document.createElement('canvas');
+		this.container = document.createElement('div'); 	//图像容器
+		this.textArea = document.createElement('canvas');	//画布
 		this.textCxt = this.textArea.getContext('2d');
 		this[PRIVATE.words] = "";		//文字信息
 		this[PRIVATE.operRect] = [];	//存放文本矩形边框顶点信息
@@ -156,7 +157,8 @@
 		this.textArea.style.zIndex = "1001";
 
 		this.parentNode.appendChild(TEXT_PROXY);
-		this.parentNode.appendChild(this.textArea);
+		this.container.appendChild(this.textArea);
+		this.parentNode.appendChild(this.container);
 
 
 		let that = this;
@@ -371,9 +373,19 @@
 		let imageData = this.textCxt.getImageData(rectInfo.x,rectInfo.y,rectInfo.width,rectInfo.height);
 		imageCxt.putImageData(imageData,0,0);
 
-		this.parentNode.removeChild(this.textArea); //移除文本
+		this.parentNode.removeChild(this.container); //移除文本
 
 		return {url:image.toDataURL("image/png"),rectInfo};
+	}
+
+	/************* 图层上浮/下沉 *************/
+
+	TextLayer.prototype.layerUp = function(){
+		this.textArea.style.zIndex = "1001";
+	}
+
+	TextLayer.prototype.layerDown = function(){
+		this.textArea.style.zIndex = "0";
 	}
 
 	window.TextLayer = TextLayer;

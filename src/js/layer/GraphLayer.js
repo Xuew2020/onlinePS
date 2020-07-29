@@ -101,7 +101,8 @@
 	/************* 几何图形构造函数 *************/
 	function GraphLayer(parentNode){
 		this.parentNode = parentNode;
-		this.graphArea = document.createElement("canvas");
+		this.container = document.createElement('div'); 	//图像容器
+		this.graphArea = document.createElement("canvas");	//画布
 		this.graphCxt = this.graphArea.getContext("2d");
 		this[PRIVATE.status] = false;  // 画布状态 --- 是否绘制了图形
 
@@ -114,7 +115,8 @@
 		this.graphArea.style.left = "0";
 		this.graphArea.style.top = "0";
 		this.graphArea.style.zIndex = "1001";
-		this.parentNode.appendChild(this.graphArea);
+		this.container.appendChild(this.graphArea);
+		this.parentNode.appendChild(this.container);
 
 
 	}
@@ -301,10 +303,20 @@
 		let imageData = this.graphCxt.getImageData(rectInfo.x,rectInfo.y,rectInfo.width,rectInfo.height);
 		imageCxt.putImageData(imageData,0,0);
 
-		this.parentNode.removeChild(this.graphArea); //移除图形
+		this.parentNode.removeChild(this.container); //移除图形
 
 		return {url:image.toDataURL("image/png"),rectInfo};
 		
+	}
+
+	/************* 图层上浮/下沉 *************/
+
+	GraphLayer.prototype.layerUp = function(){
+		this.graphArea.style.zIndex = "1001";
+	}
+
+	GraphLayer.prototype.layerDown = function(){
+		this.graphArea.style.zIndex = "0";
 	}
 
 	window.GraphLayer = GraphLayer;

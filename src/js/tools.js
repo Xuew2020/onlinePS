@@ -14,12 +14,14 @@
 	},
 
 	bindEvent:function(){
+		this.currentImgListerner();
 
 		let that = this;
 
 		let workplace = that.$("#contains")[0];
 		workplace.style.width = workplace.getBoundingClientRect().width+"px";
 		workplace.style.height = workplace.getBoundingClientRect().height+"px";
+		that.$('#image-size')[0].textContent = `${workplace.getBoundingClientRect().width}*${workplace.getBoundingClientRect().height}px`;
 
 		// 左侧快捷菜单栏
 		that.$('#main-nav>ul>li').forEach((el,index,arrays)=>{
@@ -443,7 +445,21 @@
 		let canvas = document.createElement('canvas');
 		canvas.width = 42;
 		canvas.height = 26;
-		this.imageChangeListerner(canvas,info.width,info.height);
+		if(mode === 1){
+			this.imageChangeListerner(canvas,info.width,info.height);
+		}else{
+			let cxt = canvas.getContext('2d');
+			let img = new Image();
+			let padding = 3;
+			if(mode === 2){
+				img.src = "./src/images/wb.png";
+			}else{
+				img.src = "./src/images/ht.png";
+			}
+			img.onload = function(){
+				cxt.drawImage(img,padding,padding,canvas.width-2*padding,canvas.height-2*padding);
+			}
+		}
 		let div = document.createElement("div");
 		div.className = "canvas-name";
 		div.textContent = name;
@@ -463,10 +479,7 @@
 				el.classList.remove('active');
 			});
 			this.classList.add('active');
-			that.currentImg.restore();
 			that.currentImg = that.imgArray[this.getAttribute('data-index')];
-			that.clearHistoryList();
-			that.addHistory(that.currentImg.getHistory());
 		});
 		showspan.addEventListener('click',function(e){
 			e = e || window.event;
@@ -585,6 +598,7 @@
 	textLoad:function(el){
 		this.currentImg = new TextLayer(el);
 		this.imgArray.push(this.currentImg);
+		this.addLayer("文本",2);
 	},
 	graphLoad:function(el,type){
 		if(!GraphLayer.prototype.hasOwnProperty(type)){
@@ -593,6 +607,36 @@
 		this.currentImg = new GraphLayer(el);
 		this.currentImg[type]();
 		this.imgArray.push(this.currentImg);
+		this.addLayer("绘图",3);
+	},
+
+	/* 监听当前选中图层变化 */
+	currentImgListerner:function(){
+
+		let that = this;
+		Object.defineProperty(that,'currentImg',{
+			set:function(value){
+
+				if(that.currentImg !== undefined && value !== that.currentImg){
+					if(that.currentImg instanceof ImageLayer){
+						that.currentImg.restore();
+					}else{
+						that.currentImg.layerDown();
+					}
+				}
+				this._value = value;
+				that.clearHistoryList();
+				if(that.currentImg instanceof ImageLayer){
+					// that.clearHistoryList();
+					that.addHistory(that.currentImg.getHistory());
+				}else{
+					that.currentImg.layerUp();
+				}
+			},
+			get:function(){
+				return this._value;
+			}
+		})
 	},
 
 	/* 监听图像属性变化 */
