@@ -37,7 +37,17 @@
 			that.imgLoad(workplace,this.files[0]);
 		});
 
-		//	撤销/确定 
+		// 打开网络图片
+		that.$("#inputUrl .model-footer>button")[1].addEventListener("click",function(){
+			that.urlLoad(workplace,that.$("#inputUrl .model-content>input[type=url]")[0].value);
+		});
+
+		// 保存图片
+		that.$("#saveImage")[0].addEventListener("click",function(){
+			ImageLayer.download(that.currentImg,that.imgArray);
+		});
+
+		// 撤销/确定 
 		that.$('#main-panel-oper>button')[0].addEventListener('click',function(){
 			that.currentImg.restore();
 		});
@@ -429,6 +439,19 @@
 
 
 	},
+	/* 告警窗口 */
+	warningWindow:function(resolve=()=>{},reject=()=>{},title="警告框",content="是否删除当前画布？",cannel="取消",ok="确定"){
+		this.$('#warning')[0].showModal();
+		this.$("#warning .model-header>span")[0].textContent = title;
+		this.$("#warning .model-content>p")[0].textContent = content;
+		let cannel_btn = this.$("#warning .model-footer>button")[0];
+		let ok_btn = this.$("#warning .model-footer>button")[1];
+		cannel_btn.textContent = cannel;
+		ok_btn.textContent = ok;
+		this.$("#warning .model-header>span.close")[0].addEventListener("click",reject);
+		cannel_btn.addEventListener("click",reject);
+		ok_btn.addEventListener("click",resolve);
+	},
 
 	/* 添加图层列表 */
 	addLayer:function(name,mode){
@@ -450,7 +473,7 @@
 		}else{
 			let cxt = canvas.getContext('2d');
 			let img = new Image();
-			let padding = 3;
+			let padding = 3;	 // 缩略图内边距
 			if(mode === 2){
 				img.src = "./src/images/wb.png";
 			}else{
@@ -496,7 +519,13 @@
 		delspan.addEventListener('click',function(e){
 			e = e || window.event;
 			e.stopPropagation();
-			that.$('#warning')[0].showModal();
+			new Promise((resolve,reject)=>{
+				that.warningWindow(resolve,reject);
+			}).then((resolved)=>{
+				that.imgArray[li.getAttribute("data-index")].removeLayer();
+				that.imgArray[li.getAttribute("data-index")] = null;
+				li.remove();
+			},(rejected)=>{});
 		});
 		li.click();
 	},
@@ -594,6 +623,15 @@
 			this.clearHistoryList();
 			this.historyListerner();
 		}
+	},
+	urlLoad:function(el,src){
+		console.log(src);
+		this.currentImg = new ImageLayer(el);
+		this.currentImg.load(src);
+		this.imgArray.push(this.currentImg);
+		this.addLayer("网络图片",1);
+		this.clearHistoryList();
+		this.historyListerner();
 	},
 	textLoad:function(el){
 		this.currentImg = new TextLayer(el);

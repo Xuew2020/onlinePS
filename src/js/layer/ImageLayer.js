@@ -296,14 +296,16 @@
 	function imageMerge(imageLayers){
 		GLOBAL_CXT.clearRect(0,0,GLOBAL_CANVAS.width,GLOBAL_CANVAS.height);
 		imageLayers.forEach((imageLayer)=>{
-			let info = imageLayer[PRIVATE.rectInfo];
-			let image = imageLayer.tempArea;
-			GLOBAL_CXT.drawImage(image,info.x,info.y);
+			if(imageLayer instanceof ImageLayer){
+				let info = imageLayer[PRIVATE.rectInfo];
+				let image = imageLayer.tempArea;
+				GLOBAL_CXT.drawImage(image,info.x,info.y);
+			}
 		});
 	}
 
 	/************* 下载合并后图层 *************/
-	ImageLayer.download = function(imageLayer,imageLayers){ // toDataUrl存在跨域问题
+	ImageLayer.download = function(imageLayer,imageLayers,type = "image/png"){ // toDataUrl存在跨域问题
 		if(imageLayer[PRIVATE.state] !== ImageLayer.FREEING){
 			return;
 		}
@@ -335,7 +337,7 @@
 		// link.href = canvas.toDataURL("image/png");
 		// document.body.appendChild(link);
 		// link.click();
-		window.location = canvas.toDataURL("image/png");
+		window.location = canvas.toDataURL(type);
 	}
 
 	/************* 定义滤镜效果 *************/
@@ -652,6 +654,7 @@
 	ImageLayer.prototype.load = function(source,rectInfo=null){ //加载图片资源
 		let img = new Image();
 		img.src = source;
+		img.crossOrigin = 'anonymous'; // 跨域资源共享
 		img.onload = ()=>{
 			this[PRIVATE.width] = img.width;
 			this[PRIVATE.height] = img.height;
@@ -1404,6 +1407,11 @@
 		GLOBAL_CANVAS.onmouseup = function(){
 			isMouseDown = false;
 		}
+	}
+
+	/************* 移除图层 *************/
+	ImageLayer.prototype.removeLayer = function(){
+		this.parentNode.removeChild(this.container);
 	}
 
 	window.ImageLayer = ImageLayer;

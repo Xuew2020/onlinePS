@@ -219,7 +219,7 @@ let pageConfig = {
 
 		that.$('.model-footer>button').forEach((el)=>{
 			el.addEventListener('click',function(){
-				this.parentElement.parentElement.querySelector('.close').click();
+				this.parentElement.parentElement.parentElement.close();
 			});
 		});
 

@@ -388,5 +388,10 @@
 		this.textArea.style.zIndex = "0";
 	}
 
+	/************* 移除图层 *************/
+	TextLayer.prototype.removeLayer = function(){
+		this.parentNode.removeChild(this.container);
+	}
+
 	window.TextLayer = TextLayer;
 })(window);

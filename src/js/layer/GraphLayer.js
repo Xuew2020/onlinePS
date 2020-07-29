@@ -319,5 +319,10 @@
 		this.graphArea.style.zIndex = "0";
 	}
 
+	/************* 移除图层 *************/
+	GraphLayer.prototype.removeLayer = function(){
+		this.parentNode.removeChild(this.container);
+	}
+	
 	window.GraphLayer = GraphLayer;
 })(window);
