@@ -43,9 +43,9 @@
 		});
 
 		// 保存图片
-		that.$("#saveImage")[0].addEventListener("click",function(){
-			ImageLayer.download(that.currentImg,that.imgArray);
-		});
+		// that.$("#saveImage")[0].addEventListener("click",function(){
+		// 	ImageLayer.download(that.currentImg,that.imgArray);
+		// });
 
 		// 撤销/确定 
 		that.$('#main-panel-oper>button')[0].addEventListener('click',function(){

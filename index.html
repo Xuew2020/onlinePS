@@ -172,6 +172,50 @@
 			</div>
 		</div>
 	</dialog>
+	<dialog id="download">
+		<div class="model">
+			<div class="model-header">
+				<span>下载</span>
+				<span class="close">×</span>
+			</div>
+			<div class="splitter-right"></div>
+			<div class="model-content">
+				<div id="download_img" >
+					<img src="pic/666.jpg" height="100%" />
+				</div>
+				<div id="download_oper">
+					<div>
+						<p>文件名</p>
+						<input type="text" name="img_name" value="image" />
+						<span id="noun_suffix">.png</span>
+					</div>
+					<div id="img_type">
+						<p>文件类型</p>
+						<input type="button" name="png" value="png" class="active" />
+						<input type="button" name="jpg" value="jpg" />
+						<input type="button" name="webp" value="webp" />
+					</div>
+					<div id="quality">
+						<p>品质</p>
+						<input type="range" name="quality_range" min="0" max="1" step="0.1" value="0.9" />
+						<span id="quality_text">70%</span>
+					</div>
+					<div>
+						<label for="img_width">图像宽度</label>
+						<input type="number" id="img_width" value="0" />
+					</div>
+					<div>
+						<label for="img_height">图像长度</label>
+						<input type="number" id="img_height" value="0" />
+					</div>
+				</div>
+			</div>
+			<div class="model-footer">
+				<button>取消</button>
+				<button>下载</button>
+			</div>
+		</div>
+	</dialog>
 	<!-- 图像变换面板 -->
 	<template id="txbh-template">
 		<div id="txhb-panel" class="panel">

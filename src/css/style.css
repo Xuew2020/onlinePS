@@ -482,7 +482,7 @@ dialog{
 	width: 70px;
 }
 
-input[name=imgUrl]{
+input[name=imgUrl],#download input[type=text]{
 	height: 32px;
     line-height: 28px;
     color: #999;
@@ -493,10 +493,109 @@ input[name=imgUrl]{
     width: 80%;
     margin: 0 auto;
 }
-input[name=imgUrl]:hover{
+input[name=imgUrl]:hover,#download input[type=text]:hover{
 	border: 2px solid hsla(0,0%,100%,.3);
 }
-input[name=imgUrl]:focus{
+input[name=imgUrl]:focus,#download input[type=text]:focus,#download input[type=number]:focus{
 	border: 2px solid var(--ok-button-color);
 	outline: 0 ;
+}
+#download .model{
+	height: 420px;
+	width: 700px;
+}
+#download .model-content{
+	display: flex;
+	overflow: hidden;
+}
+#download_img{
+	padding-top: 25px;
+	padding-left: 8px;
+	width: 400px;
+	height: 100%;
+	text-align: center;
+	box-sizing: border-box;
+}
+#download_oper{
+	flex: 1;
+	height: 100%;
+	padding: 10px;
+	box-sizing: border-box;
+	font-size:0;
+	/*text-align: center;*/
+}
+#download .model-content>div>div{
+	margin-bottom: 10px;
+}
+#download .model-content p{
+	text-align: left;
+	padding: 12px;
+    padding-bottom: 6px;
+    padding-left: 0;
+    font-size: 15px;
+}
+#noun_suffix,#quality_text{
+	font-size: 14px;
+	display: inline-block;
+}
+#noun_suffix{
+	padding-left: 8px;
+	transform: translateY(3px);
+}
+#quality_text{
+	padding-left: 12px;
+	transform: translateY(-3px);
+}
+#download input[type=button]{
+	height: 30px;
+	width: 80px;
+	line-height: 30px;
+	background-color: var(--cannel-button-color);
+    border: 1px solid var(--cannel-button-color);
+    /*border-radius: 5px;*/
+    opacity: 0.8;
+    color: white;
+    cursor: pointer;
+    margin-right: 3px;
+}
+#download input[type=button].active{
+	background-color: var(--ok-button-color);
+    border: 1px solid var(--ok-button-color);
+}
+#download input[type=button]:focus{
+	outline:0;
+}
+#download input[type=button]:hover,#download input[type=number]:hover{
+	opacity: 0.9;
+}
+#download input[type=button]:nth-of-type(1){
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+}
+#download input[type=button]:nth-of-type(3){
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+#download input[type=range]{
+	width: 220px;
+}
+#download input[type=number]{
+    color: var(--text-color);
+    background: rgba(0,0,0,.1);
+    border: 2px solid hsla(0,0%,100%,.1);
+    border-radius: 2px;
+    height: 25px;
+    text-align: center;
+    width: 80px;
+}
+#download input[type=number]::-webkit-inner-spin-button{
+	display: none;
+	height: 20px;
+	width: 8px !important;
+	color: yellow;
+	background-color: yellow;
+}
+#download label{
+	font-size: 14px;
+	margin-right: 130px;
 }

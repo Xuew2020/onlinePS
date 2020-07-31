@@ -26,6 +26,11 @@ let pageConfig = {
 		menus[0].querySelectorAll('li')[1].addEventListener('click',function(){
 			that.$('#inputUrl')[0].showModal();
 		});
+		// 下载
+		menus[0].querySelectorAll('li')[2].addEventListener('click',function(){
+			that.$('#download')[0].showModal();
+			that.$('#download input[name=img_name]')[0].value = Date.parse(new Date());
+		});
 
 		// 图像 
 		let tx_els = ["#txbh","#txzq"];
@@ -210,6 +215,7 @@ let pageConfig = {
 		});
 
 		/* 模态框 */
+
 		let warning = that.$('#warning')[0];
 		that.$('.model .close').forEach((el)=>{
 			el.addEventListener('click',function(){
@@ -235,6 +241,27 @@ let pageConfig = {
 			that.$('#pos-info>span')[0].innerText = 0;
 			that.$('#pos-info>span')[1].innerText = 0;
 		});
+
+		// 下载模态框
+		that.$("#img_type>input[type=button]").forEach((el,index,arrays)=>{
+			let noun_suffix = that.$("#noun_suffix")[0];
+			el.addEventListener("click",function(){
+				Array.prototype.some.call(arrays,(el)=>{
+					if(el.classList.contains("active")){
+						el.classList.remove("active");
+						return true;
+					}
+				});
+				el.classList.add("active");
+				noun_suffix.innerText = '.'+el.value;
+			});
+		});
+		let quality_text = that.$("#quality_text")[0];
+		that.$("input[name=quality_range]")[0].addEventListener("input",function(){
+			quality_text.innerText = Number.parseFloat(this.value,10).toFixed(1)*100+"%";
+		});
+
+
 
 	},
 
