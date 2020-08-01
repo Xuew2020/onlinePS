@@ -254,6 +254,11 @@ let pageConfig = {
 				});
 				el.classList.add("active");
 				noun_suffix.innerText = '.'+el.value;
+				if(index === 0){
+					that.$("#quality")[0].style.visibility = "hidden";
+				}else{
+					that.$("#quality")[0].style.visibility = "visible";
+				}
 			});
 		});
 		let quality_text = that.$("#quality_text")[0];
@@ -261,7 +266,7 @@ let pageConfig = {
 			quality_text.innerText = Number.parseFloat(this.value,10).toFixed(1)*100+"%";
 		});
 
-
+		
 
 	},
 

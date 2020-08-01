@@ -304,12 +304,14 @@
 		});
 	}
 
-	/************* 下载合并后图层 *************/
-	ImageLayer.download = function(imageLayer,imageLayers,type = "image/png"){ // toDataUrl存在跨域问题
+	/************* 获取合并图层最小区域信息 *************/
+	ImageLayer.getLayersInfo = function(imageLayer,imageLayers,type = "image/png",quality = 1){ // toDataUrl存在跨域问题
 		if(imageLayer[PRIVATE.state] !== ImageLayer.FREEING){
 			return;
 		}
 		imageMerge(imageLayers);
+		quality = Number.parseInt(quality,10)/100;
+		console.log(quality);
 		let minX=Infinity, minY=Infinity, maxX=0, maxY=0;
 		imageLayers.forEach((value)=>{
 			let info = value[PRIVATE.rectInfo];
@@ -333,12 +335,37 @@
 		cxt.putImageData(imageData,0,0);
 		GLOBAL_CXT.clearRect(0,0,GLOBAL_CANVAS.width,GLOBAL_CANVAS.height);
 
-		// let link = document.createElement('a');
-		// link.href = canvas.toDataURL("image/png");
-		// document.body.appendChild(link);
-		// link.click();
-		window.location = canvas.toDataURL(type);
+		let base64 = null;
+		if(type === "image/png"){
+			base64 = canvas.toDataURL(type);
+		}else{
+			base64 = canvas.toDataURL(type,quality);
+		}
+		return {src:base64,width:width,height:height};
 	}
+
+	/************* 下载 *************/
+	ImageLayer.download = function(imageLayer,imageLayers,width,height,type = "image/png",quality = 1){
+
+		let data = ImageLayer.getLayersInfo(imageLayer,imageLayers,type,quality);
+		let url = data.src;
+		if(data.width !== width || data.height !== height){
+			let canvas = document.createElement('canvas');
+			let cxt = canvas.getContext('2d');
+			canvas.width = width;
+			canvas.height = height; 
+			let img = new Image();
+			img.src = data.src;
+			img.onload = function(){
+				cxt.drawImage(img,0,0,width,height);
+				url = canvas.toDataURL(type);
+				window.location = url;
+			}
+		}else{
+			window.location = url;
+		}
+	}
+
 
 	/************* 定义滤镜效果 *************/
 	const FILTER = {										

@@ -181,7 +181,7 @@
 			<div class="splitter-right"></div>
 			<div class="model-content">
 				<div id="download_img" >
-					<img src="pic/666.jpg" height="100%" />
+					<img src="" alt="缩略图" />
 				</div>
 				<div id="download_oper">
 					<div>
@@ -192,12 +192,12 @@
 					<div id="img_type">
 						<p>文件类型</p>
 						<input type="button" name="png" value="png" class="active" />
-						<input type="button" name="jpg" value="jpg" />
+						<input type="button" name="jpg" value="jpeg" />
 						<input type="button" name="webp" value="webp" />
 					</div>
-					<div id="quality">
+					<div id="quality" style="visibility:hidden;">
 						<p>品质</p>
-						<input type="range" name="quality_range" min="0" max="1" step="0.1" value="0.9" />
+						<input type="range" name="quality_range" min="0" max="1" step="0.1" value="0.7" />
 						<span id="quality_text">70%</span>
 					</div>
 					<div>
@@ -399,6 +399,9 @@
 			<div id="wbgj-create">
 				<span>创建文本图层</span>
 			</div>
+			<div id="wbgj-trans">
+				<span>栅栏化</span>
+			</div>
 			<div>
 				<label for="wbgj-font-family">字体样式：</label>
 				<select id="wbgj-font-family">
@@ -449,6 +452,9 @@
 			</div>
 			<div>
 				<span class="iconfont icon-ziyouhuizhi">&nbsp;&nbsp;自由绘制</span>
+			</div>
+			<div>
+				<span>栅栏化</span>
 			</div>
 		</div>
 	</template>

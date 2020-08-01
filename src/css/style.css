@@ -508,6 +508,10 @@ input[name=imgUrl]:focus,#download input[type=text]:focus,#download input[type=n
 	display: flex;
 	overflow: hidden;
 }
+#download .model-footer{
+	height: 45px;
+	padding-right: 15px;
+}
 #download_img{
 	padding-top: 25px;
 	padding-left: 8px;
@@ -520,6 +524,7 @@ input[name=imgUrl]:focus,#download input[type=text]:focus,#download input[type=n
 	flex: 1;
 	height: 100%;
 	padding: 10px;
+	padding-left: 20px;
 	box-sizing: border-box;
 	font-size:0;
 	/*text-align: center;*/
@@ -597,5 +602,5 @@ input[name=imgUrl]:focus,#download input[type=text]:focus,#download input[type=n
 }
 #download label{
 	font-size: 14px;
-	margin-right: 130px;
+	margin-right: 125px;
 }

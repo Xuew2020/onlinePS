@@ -43,9 +43,42 @@
 		});
 
 		// 保存图片
-		// that.$("#saveImage")[0].addEventListener("click",function(){
-		// 	ImageLayer.download(that.currentImg,that.imgArray);
-		// });
+		function showLayersInfo(){ // 显示要下载的图像信息
+			let type = "image/"+that.$("#noun_suffix")[0].textContent.substring(1);
+			let quality = that.$("#quality_text")[0].textContent.match(/\d+/)[0];
+			let data = ImageLayer.getLayersInfo(that.currentImg,that.imgArray,type,quality);
+			let thumbnail = that.$("#download_img>img")[0];
+			that.$("#img_width")[0].value = data.width;
+			that.$("#img_height")[0].value = data.height;
+			if(data.width>data.height){
+				thumbnail.style = "width:100%";
+			}else{
+				thumbnail.style = "height:100%";
+			}
+			thumbnail.src = data.src;
+		}
+
+		that.$("#saveImage")[0].addEventListener("click",function(){
+			showLayersInfo();
+		});
+
+		that.$("#img_type>input[type=button]").forEach((el,index,arrays)=>{
+			el.addEventListener("click",function(){
+				showLayersInfo();
+			});
+		});
+
+		that.$("#download input[name=quality_range]")[0].addEventListener("change",function(){
+			showLayersInfo();
+		});
+
+		that.$("#download .model-footer>button")[1].addEventListener('click',function(){
+			let type = "image/"+that.$("#noun_suffix")[0].textContent.substring(1);
+			let quality = that.$("#quality_text")[0].textContent.match(/\d+/)[0];
+			let width = that.$("#img_width")[0].value;
+			let height = that.$("#img_height")[0].value;
+			ImageLayer.download(that.currentImg,that.imgArray,width,height,type,quality);
+		});
 
 		// 撤销/确定 
 		that.$('#main-panel-oper>button')[0].addEventListener('click',function(){
@@ -382,6 +415,7 @@
 				template.remove();	
 
 				let wbgj_create = root.querySelector("#wbgj-create");	
+				let wbgj_trans = root.querySelector("#wbgj-trans");
 				let wbgj_font_family = root.querySelector("#wbgj-font-family");	
 				let wbgj_font_weight = root.querySelector("#wbgj-font-weight");
 				let wbgj_text_style = root.querySelector("#wbgj-text-style");
@@ -390,6 +424,9 @@
 
 				wbgj_create.addEventListener('click',function(){
 					that.textLoad(workplace);
+				});
+				wbgj_trans.addEventListener('click',function(){
+					that.toImageLayer(workplace);
 				});
 				wbgj_font_family.addEventListener('change',function(){
 					TextLayer.setFontFamliy(that.currentImg,this.value);
@@ -425,9 +462,13 @@
 				root.appendChild(template.content);
 				template.remove();	
 
-				root.querySelectorAll('#htgj-panel>div').forEach((el,index)=>{
+				root.querySelectorAll('#htgj-panel>div').forEach((el,index,arrays)=>{
 					el.addEventListener('click',function(){
-						that.graphLoad(workplace,htgj_styles[index]);
+						if(index !== arrays.length-1){
+							that.graphLoad(workplace,htgj_styles[index]);
+						}else{
+							that.toImageLayer(workplace);
+						}
 					});
 				});
 
@@ -841,6 +882,30 @@
 				that.addHistory(that.currentImg.getHistory());
 			}
 		});
+	},
+
+	// 栅栏化
+	toImageLayer:function(el){
+		if(this.currentImg instanceof ImageLayer){
+			return;
+		}
+		let data = this.currentImg.toImageData();
+		this.currentImg = new ImageLayer(el);
+		this.currentImg.load(data.url,data.rectInfo);	
+		let index = -1;
+		let canvas = null;
+		Array.prototype.some.call(this.$('#layer-content>ul>li'),(el)=>{
+			if(el.classList.contains("active")){
+				index = el.getAttribute("data-index");
+				canvas = el.querySelector("canvas");
+				return true; 
+			}
+		});
+		this.imgArray[index] = this.currentImg;
+		let info = this.$("#contains")[0].getBoundingClientRect();
+		this.imageChangeListerner(canvas,info.width,info.height);
+		this.clearHistoryList();
+		this.historyListerner();
 	},
 
  };

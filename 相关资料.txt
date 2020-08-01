@@ -8,6 +8,7 @@ canvasAPI ：https://developer.mozilla.org/zh-CN/docs/Web/API/Canvas_API/Tutoria
 数字图像处理基础知识：https://www.cnblogs.com/main404/p/11344976.html
 CSS图像处理：https://blog.csdn.net/clhq71932/article/details/100254049
 几种常见计算机图像处理操作的原理及canvas实现：https://blog.csdn.net/haluoluo211/article/details/52770310
+toDataURL压缩原理：https://www.jianshu.com/p/63e909109d67
 多图层即多个canvas
 画布中每个元素都封装成一个对象
 
