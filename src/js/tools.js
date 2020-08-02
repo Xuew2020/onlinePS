@@ -124,23 +124,26 @@
 				root.appendChild(template.content);
 				template.remove();
 
+			}else{
+				txhb_pannel.style.display = "block";
+			}
+
+			if(that.currentImg.pageInfo.lisernerFlag.imgAttr !== true){
+
 				let img_width = root.querySelector("#img-width");
 				let img_height = root.querySelector("#img-height");
 				let rotateAngle = root.querySelector("#rotateAngle");
 				let img_posX = root.querySelector("#img-posX");
 				let img_posY = root.querySelector("#img-posY");
+				img_width.value = info.width;
+				img_height.value = info.height;
+				rotateAngle.value = info.rotateAngle;
+				img_posX.value = info.x;
+				img_posY.value = info.y;
 
 				that.imgAttrListener(img_posX,img_posY,img_width,img_height,rotateAngle);
-
-			}else{
-				txhb_pannel.style.display = "block";
+				that.currentImg.pageInfo.lisernerFlag.imgAttr = true;
 			}
-			// console.log(info);
-			// root.querySelector("#img-width").value = info.width;
-			// root.querySelector("#img-height").value = info.height;
-			// root.querySelector("#rotateAngle").value = info.rotateAngle;
-			// root.querySelector("#img-posX").value = info.x;
-			// root.querySelector("#img-posY").value = info.y;
 		});
 
 		// 图像增强
@@ -157,16 +160,22 @@
 				// 亮度
 				root.querySelector("#brightness").addEventListener('input',function(){
 					that.currentImg.filter('brightness',this.value);
+					that.currentImg.pageInfo.data.brightness = this.value;
 				});
 
 				// 透明度
 				root.querySelector("#opacity").addEventListener('input',function(){
 					that.currentImg.filter('opacity',this.value);
+					that.currentImg.pageInfo.data.opacity = this.value;
 				});
 
 			}else{
 				txzq_panel.style.display = "block";
 			}
+
+			// 初始化
+			root.querySelector("#brightness").value = that.currentImg.pageInfo.data.brightness || 0;
+			root.querySelector("#opacity").value = that.currentImg.pageInfo.data.opacity || 1;
 		});
 
 		// 剪切
@@ -272,13 +281,16 @@
 			}else{
 				hb_panel.style.display = "block";
 			}
-			
+
+			let hb_size = root.querySelector("#hb-size");
+			let hb_color = root.querySelector("#hb-color");
+			ImageLayer.setBrushSize(hb_size.value);
+			ImageLayer.setBrushColor(hb_color.value);
 		});
 
 		// 橡皮擦
 		that.$("#xpc")[0].addEventListener('click',function(){
 			
-			that.currentImg.eraser(0.3);
 			initRoot();
 
 			let xpc_panel = root.querySelector('#xpc-panel');
@@ -301,7 +313,11 @@
 			}else{
 				xpc_panel.style.display = "block";
 			}
-			
+
+			let xpc_size = root.querySelector("#xpc-size");
+			let xpc_power = root.querySelector("#xpc-power");
+			ImageLayer.setBrushSize(xpc_size.value);
+			that.currentImg.eraser(1 - xpc_power.value);
 		});
 
 		// 尺子
@@ -379,8 +395,19 @@
 				template.remove();				
 
 				let mh_size = root.querySelector("#mh-size");
+				let mh_kernel = root.querySelector("#mh-kernel");
 				mh_size.addEventListener('input',function(){
 					ImageLayer.setBrushSize(this.value);
+				});
+				mh_kernel.addEventListener('change',function(){
+					let mhs = root.querySelectorAll('#mh-panel>div:nth-of-type(n+3)');
+					Array.prototype.some.call(mhs,(el)=>{
+						if(el.classList.contains('active')){
+							that.currentImg.resolve();
+							el.click();
+							return true;
+						}
+					});
 				});
 
 				let mhs = root.querySelectorAll('#mh-panel>div:nth-of-type(n+3)');
@@ -394,13 +421,15 @@
 						});
 						el.classList.add("active");
 						let value = Number.parseInt(root.querySelector("#mh-kernel").value);
+						that.currentImg.resolve();
 						that.currentImg.mosaic(mh_styles[index],value);
 					});
 				});
 			}else{
 				mh_panel.style.display = "block";
 			}
-			
+			let mh_size = root.querySelector("#mh-size");
+			ImageLayer.setBrushSize(mh_size.value);
 		});
 
 		// 文本工具
@@ -429,25 +458,47 @@
 					that.toImageLayer(workplace);
 				});
 				wbgj_font_family.addEventListener('change',function(){
-					TextLayer.setFontFamliy(that.currentImg,this.value);
+					TextLayer.setFontFamily(that.currentImg,this.value);
+					that.currentImg.pageInfo.data.fontFamily = this.value;
 				});
 				wbgj_font_weight.addEventListener('change',function(){
 					TextLayer.setFontWeight(that.currentImg,this.value);
+					that.currentImg.pageInfo.data.fontWeight = this.value;
 				});
 				wbgj_text_style.addEventListener('change',function(){
 					TextLayer.setFontStyle(that.currentImg,this.value);
+					that.currentImg.pageInfo.data.fontStyle = this.value;
 				});
 				wbgj_text_size.addEventListener('input',function(){
 					TextLayer.setFontSize(that.currentImg,this.value);
+					that.currentImg.pageInfo.data.fontSize = this.value;
 				});
 				wbgj_text_color.addEventListener('input',function(){
 					TextLayer.setFontColor(that.currentImg,this.value);
+					that.currentImg.pageInfo.data.fontColor = this.value;
 				});
 
 			}else{
 				wbgj_panel.style.display = "block";
 			}
-		
+
+			// let wbgj_font_family = root.querySelector("#wbgj-font-family");	
+			// let wbgj_font_weight = root.querySelector("#wbgj-font-weight");
+			// let wbgj_text_style = root.querySelector("#wbgj-text-style");
+			// let wbgj_text_size = root.querySelector("#wbgj-text-size");
+			// let wbgj_text_color = root.querySelector("#wbgj-text-color");
+
+			// wbgj_font_family.value = that.currentImg.pageInfo.data.fontFamily || "sans-serif";
+			// wbgj_font_weight.value = that.currentImg.pageInfo.data.fontWeight || "正常";
+			// wbgj_text_style.value = that.currentImg.pageInfo.data.fontStyle || "填充";
+			// wbgj_text_size.value = that.currentImg.pageInfo.data.fontSize || 20;
+			// wbgj_text_color.value = that.currentImg.pageInfo.data.fontColor || "#000000";
+
+			// TextLayer.setFontFamily(that.currentImg,wbgj_font_family.value);
+			// TextLayer.setFontWeight(that.currentImg,wbgj_font_weight.value);
+			// TextLayer.setFontStyle(that.currentImg,wbgj_text_style.value);
+			// TextLayer.setFontSize(that.currentImg,wbgj_text_size.value);
+			// TextLayer.setFontColor(that.currentImg,wbgj_text_color.value);
 		});
 
 		// 绘图工具
@@ -658,6 +709,10 @@
 		reader.readAsDataURL(src);
 		reader.onload = ()=>{
 			this.currentImg = new ImageLayer(el);
+			this.currentImg.pageInfo = {
+				lisernerFlag:{},			// 监听器标记
+				data:{},				// 功能数据
+			};
 			this.currentImg.load(reader.result);
 			this.imgArray.push(this.currentImg);
 			this.addLayer(src.name,1);
@@ -668,6 +723,10 @@
 	urlLoad:function(el,src){
 		console.log(src);
 		this.currentImg = new ImageLayer(el);
+		this.currentImg.pageInfo = {
+			lisernerFlag:{},	
+			data:{},			
+		};
 		this.currentImg.load(src);
 		this.imgArray.push(this.currentImg);
 		this.addLayer("网络图片",1);
@@ -676,6 +735,9 @@
 	},
 	textLoad:function(el){
 		this.currentImg = new TextLayer(el);
+		this.currentImg.pageInfo = {
+			data:{},			
+		};
 		this.imgArray.push(this.currentImg);
 		this.addLayer("文本",2);
 	},

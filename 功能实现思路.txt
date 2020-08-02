@@ -1,8 +1,0 @@
-在线图像处理实现思路
-
-结构：
-每块图层由3个canvas元素构成
-imageArea ： 显示图像的canvas
-operArea  ： 图像操作的canvas
-tempArea  ： 存放最后一次保存的图像 --- 历史记录的最后一个
-

@@ -265,7 +265,7 @@
 		fontSize = `${value}px`;
 		textLayer[PRIVATE.drawText](true);
 	}
-	TextLayer.setFontFamliy = (textLayer,style)=>{
+	TextLayer.setFontFamily = (textLayer,style)=>{
 		if(!(textLayer instanceof TextLayer)){
 			return;
 		}

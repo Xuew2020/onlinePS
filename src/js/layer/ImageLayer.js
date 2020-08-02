@@ -194,6 +194,7 @@
 	}
 	ImageLayer.setBrushColor = function(color){ // 设置画笔颜色
 		BRUSH.color = color;
+		BRUSH.draw(GLOBAL_CANVAS);
 	}
 
 	
