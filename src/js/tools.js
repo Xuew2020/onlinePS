@@ -7,7 +7,9 @@
  let tools = {
  	imgArray:[],			//图层数组
  	currentImg:null,		//当前选中的图层
- 	currentOper:null,
+ 	currentOper:null,		//当前选中的操作
+ 	historyIndex:{},		//历史记录索引
+
 
  	$ : function(el){
 		return document.querySelectorAll(el);
@@ -26,8 +28,17 @@
 		// 左侧快捷菜单栏
 		that.$('#main-nav>ul>li').forEach((el,index,arrays)=>{
 			el.addEventListener('click',function(){
-				that.currentImg.restore();
+				if(that.currentImg.getStatus() !== ImageLayer.FREEING){
+					that.restore();
+				}
 				that.currentOper = index;
+				that.historyIndex.historyLength = that.currentImg.getHistoryLength();
+				Array.prototype.some.call(that.$('#history-content>ul>li'),(el,index)=>{
+					if(el.classList.contains("active")){
+						that.historyIndex.currentHistory = index;
+						return true;
+					}
+				});
 			});
 		});
 		
@@ -82,11 +93,11 @@
 
 		// 撤销/确定 
 		that.$('#main-panel-oper>button')[0].addEventListener('click',function(){
-			that.currentImg.restore();
+			that.restore();
 		});
 
 		that.$('#main-panel-oper>button')[1].addEventListener('click',function(){
-			that.currentImg.resolve();
+			that.resolve();
 		});
 
 
@@ -160,13 +171,13 @@
 				// 亮度
 				root.querySelector("#brightness").addEventListener('input',function(){
 					that.currentImg.filter('brightness',this.value);
-					that.currentImg.pageInfo.data.brightness = this.value;
+					// that.currentImg.pageInfo.data.brightness = this.value;
 				});
 
 				// 透明度
 				root.querySelector("#opacity").addEventListener('input',function(){
 					that.currentImg.filter('opacity',this.value);
-					that.currentImg.pageInfo.data.opacity = this.value;
+					// that.currentImg.pageInfo.data.opacity = this.value;
 				});
 
 			}else{
@@ -174,8 +185,8 @@
 			}
 
 			// 初始化
-			root.querySelector("#brightness").value = that.currentImg.pageInfo.data.brightness || 0;
-			root.querySelector("#opacity").value = that.currentImg.pageInfo.data.opacity || 1;
+			root.querySelector("#brightness").value = 0;
+			root.querySelector("#opacity").value = 1;
 		});
 
 		// 剪切
@@ -306,7 +317,7 @@
 					ImageLayer.setBrushSize(this.value);
 				});
 				xpc_power.addEventListener('change',function(){
-					that.currentImg.resolve();
+					that.resolve();
 					that.currentImg.eraser(1 - this.value);
 				});
 
@@ -318,6 +329,7 @@
 			let xpc_power = root.querySelector("#xpc-power");
 			ImageLayer.setBrushSize(xpc_size.value);
 			that.currentImg.eraser(1 - xpc_power.value);
+			
 		});
 
 		// 尺子
@@ -403,7 +415,7 @@
 					let mhs = root.querySelectorAll('#mh-panel>div:nth-of-type(n+3)');
 					Array.prototype.some.call(mhs,(el)=>{
 						if(el.classList.contains('active')){
-							that.currentImg.resolve();
+							that.resolve();
 							el.click();
 							return true;
 						}
@@ -421,7 +433,7 @@
 						});
 						el.classList.add("active");
 						let value = Number.parseInt(root.querySelector("#mh-kernel").value);
-						that.currentImg.resolve();
+						that.resolve();
 						that.currentImg.mosaic(mh_styles[index],value);
 					});
 				});
@@ -656,8 +668,8 @@
 				spanName.textContent = opers["1"].name;
 				spanIcon.className = `iconfont ${opers["1"].icon}`;
 			}else{
-				spanName.textContent = opers[data.state].name;
-				spanIcon.className = `iconfont ${opers[data.state].icon}`;
+				spanName.textContent = opers[data.status].name;
+				spanIcon.className = `iconfont ${opers[data.status].icon}`;
 			}
 
 			li.appendChild(spanName);
@@ -968,6 +980,23 @@
 		this.imageChangeListerner(canvas,info.width,info.height);
 		this.clearHistoryList();
 		this.historyListerner();
+	},
+
+	// 撤销
+	restore:function(){
+		let flag = false;
+		if(this.historyIndex.historyLength !== this.currentImg.getHistoryLength()){
+			flag = true;
+		}
+		this.currentImg.restore(this.historyIndex.historyLength-1,flag);
+		this.$(`#history-content>ul>li:nth-of-type(${this.historyIndex.currentHistory+1})`)[0].classList.add("active");
+	},
+	// 保存
+	resolve:function(){
+		// if(this.currentImg.getStatus() !== ImageLayer.FREEING && this.historyIndex.currentHistory !== this.currentImg.getHistoryLength()){
+		// 	this.currentImg.removeHistory(this.historyIndex.currentHistory);
+		// }
+		this.currentImg.resolve();
 	},
 
  };

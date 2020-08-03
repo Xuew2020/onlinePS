@@ -226,10 +226,10 @@
 		return Math.sqrt((this.sx-this.dx)*(this.sx-this.dx)+(this.sy-this.dy)*(this.sy-this.dy));
 	}
 	ImageLayer.ruler = function(imageLayer,callback){
-		if(imageLayer[PRIVATE.state] !== ImageLayer.FREEING){
+		if(imageLayer[PRIVATE.status] !== ImageLayer.FREEING){
 			return;
 		}
-		imageLayer[PRIVATE.state] = ImageLayer.RULER;
+		imageLayer[PRIVATE.status] = ImageLayer.RULER;
 		// GLOBAL_CANVAS.style.display = "inline";
 		GLOBAL_CANVAS.onmousedown = function(e){
 			e = e || window.event;
@@ -266,10 +266,10 @@
 	/************* 吸管工具 *************/
 
 	ImageLayer.straw = function(imageLayer,imageLayers,callback){
-		if(imageLayer[PRIVATE.state] !== ImageLayer.FREEING){
+		if(imageLayer[PRIVATE.status] !== ImageLayer.FREEING){
 			return;
 		}
-		imageLayer[PRIVATE.state] = ImageLayer.STRAW;
+		imageLayer[PRIVATE.status] = ImageLayer.STRAW;
 		imageMerge(imageLayers);
 		// GLOBAL_CANVAS.style.display = "inline";
 
@@ -307,7 +307,7 @@
 
 	/************* 获取合并图层最小区域信息 *************/
 	ImageLayer.getLayersInfo = function(imageLayer,imageLayers,type = "image/png",quality = 1){ // toDataUrl存在跨域问题
-		if(imageLayer[PRIVATE.state] !== ImageLayer.FREEING){
+		if(imageLayer[PRIVATE.status] !== ImageLayer.FREEING){
 			return;
 		}
 		imageMerge(imageLayers);
@@ -521,7 +521,7 @@
 	/************* 属性和方法私有化 *************/
 	const PRIVATE = {										
 		/* 私有属性 */
-		state:Symbol("state"),
+		status:Symbol("status"),
 		history:Symbol("history"),
 		width:Symbol("width"),
 		height:Symbol('height'),
@@ -562,7 +562,7 @@
 		this.baseInfo = {};									//图层外围矩形边框信息、旋转角度 --- 提供图像数据
 		this[PRIVATE.history] = [];			   				//操作记录
 		this[PRIVATE.rectInfo] = {};						//图层外围矩形边框信息
-		this[PRIVATE.state] = ImageLayer.FREEING;			//操作状态
+		this[PRIVATE.status] = ImageLayer.FREEING;			//操作状态
 		this[PRIVATE.isClearImageArea] = false;				//是否清空显示区域
 		this[PRIVATE.scaleFlag] = true;						//判断在缩放时是否保存图像 --- 避免图片模糊
 		this[PRIVATE.rotateFlag] = true;					//判断在旋转时是否保存矩形边框信息 
@@ -666,7 +666,7 @@
 		this[PRIVATE.scaleFlag] = true;						
 		this[PRIVATE.rotateFlag] = true;
 		this[PRIVATE.isClearImageArea] = false;
-		this[PRIVATE.state] = ImageLayer.FREEING;
+		this[PRIVATE.status] = ImageLayer.FREEING;
 
 		/*** 重置旋转角度 ***/
 		this.baseInfo.rotateAngle = 0;
@@ -714,6 +714,11 @@
 		this.baseInfo.width = width;
 		this.baseInfo.height = height;
 	}
+	/************* 获取当前状态 *************/
+
+	ImageLayer.prototype.getStatus = function(){
+		return this[PRIVATE.status];
+	}
 
 	/************* 定义历史记录相关函数 *************/
 	ImageLayer.prototype.getHistory = function(){
@@ -724,17 +729,26 @@
 		return this[PRIVATE.history].length;
 	}
 
+	ImageLayer.prototype.removeHistory = function(index = -1){ //删除历史记录
+		if(!Number.isInteger(index) || index<-1 || index>= this[PRIVATE.history].length){
+			return;
+		}
+		this[PRIVATE.history].splice(index+1,this.getHistoryLength());
+		this.baseInfo.historyLength = this.getHistoryLength();
+		this.baseInfo.imageData = this[PRIVATE.history][this.getHistoryLength()-1];
+	}
+
 	ImageLayer.prototype[PRIVATE.store] = function(){ //保存当前图像
 		/**
 		 *	1、data对象保存当前图像信息及位移
 		 *	2、更新当前图像信息并将图像备份到临时区域
 		 */
-		let state = this[PRIVATE.state];
+		let status = this[PRIVATE.status];
 		
 		let data = {
 			imageData:this.imageCxt.getImageData(0,0,this.imageArea.width,this.imageArea.height),
 			position:{x:this.imageArea.offsetLeft,y:this.imageArea.offsetTop},
-			state:state,
+			status:status,
 		}
 		this[PRIVATE.history].push(data);
 		this[PRIVATE.saveRectInfo](data.position.x,data.position.y,this.imageArea.width,this.imageArea.height);
@@ -744,7 +758,7 @@
 		this.baseInfo.imageData = this[PRIVATE.history][this.getHistoryLength()-1];
 	}
 
-	ImageLayer.prototype.restore = function(index = this[PRIVATE.history].length-1){ //退回到第index次操作
+	ImageLayer.prototype.restore = function(index = this[PRIVATE.history].length-1, remove = false){ //退回到第index次操作
 		/**
 		 *	1、是否为数字以及边界判断
 		 *	2、取出第index次的数据，设置到图像显示区域及操作区域
@@ -755,6 +769,10 @@
 			return;
 		}
 		
+		if(remove === true){ // 清除多余记录
+			this.removeHistory(index);
+		}
+
 		let data = this[PRIVATE.history][index];
 		this.operCxt.clearRect(0,0,this.operArea.width,this.operArea.height);
 		this[PRIVATE.x] = data.position.x;
@@ -779,13 +797,13 @@
 		 *	4、重置操作区域以及共享区域
 		 *	5、将当前图像保存，并重置所有相关标记
 		 */
-		if(this[PRIVATE.state] === ImageLayer.FREEING){
+		if(this[PRIVATE.status] === ImageLayer.FREEING){
 			return;
 		}
-		if(this[PRIVATE.state] === ImageLayer.CLIP){
+		if(this[PRIVATE.status] === ImageLayer.CLIP){
 			this.saveClipArea();
 		}
-		if(this[PRIVATE.state] === ImageLayer.IMAGEMATTING){
+		if(this[PRIVATE.status] === ImageLayer.IMAGEMATTING){
 			console.log("IMAGEMATTING");
 			this.saveImageMattingArea();
 		}
@@ -809,7 +827,7 @@
 		 *	1、判断状态是否为FREEING或FILTER或者用于画笔操作
 		 *
 		 */
-		if(!(this[PRIVATE.state]===ImageLayer.FREEING || this[PRIVATE.state] === ImageLayer.FILTER) && isUseInBrush === false){
+		if(!(this[PRIVATE.status]===ImageLayer.FREEING || this[PRIVATE.status] === ImageLayer.FILTER) && isUseInBrush === false){
 			return;
 		}
 		if(!FILTER.hasOwnProperty(type)){
@@ -826,7 +844,7 @@
 		if(FILTER[type](imageData,value) === true){
 			this.operCxt.putImageData(imageData,0,0);
 			if(!isUseInBrush){
-				this[PRIVATE.state] = ImageLayer.FILTER;
+				this[PRIVATE.status] = ImageLayer.FILTER;
 			}
 			if(type === "opacity" && !isUseInBrush){
 				this[PRIVATE.isClearImageArea] = true;
@@ -854,10 +872,10 @@
 		/**
 		 *	通过GLOBAL_CANVAS代理鼠标事件
 		 */
-		if(this[PRIVATE.state]!==ImageLayer.FREEING){
+		if(this[PRIVATE.status]!==ImageLayer.FREEING){
 			return;
 		}
-		this[PRIVATE.state] = ImageLayer.TRANSFORM;
+		this[PRIVATE.status] = ImageLayer.TRANSFORM;
 		GLOBAL_CXT.clearRect(0,0,GLOBAL_CANVAS.width,GLOBAL_CANVAS.height);
 		// GLOBAL_CANVAS.style.display = "inline";
 		
@@ -928,7 +946,7 @@
 		 *	4、根据最小外接矩形设置图像位移及大小
 		 *	5、将旋转后的图显示在图像操作区域
 		 */
-		if(!(this[PRIVATE.state]===ImageLayer.FREEING || this[PRIVATE.state] ===ImageLayer.TRANSFORM)){
+		if(!(this[PRIVATE.status]===ImageLayer.FREEING || this[PRIVATE.status] ===ImageLayer.TRANSFORM)){
 			return;
 		}
 		/***  拷贝矩形边框信息  ***/
@@ -971,7 +989,7 @@
 		this.imageCxt.drawImage(this.operArea,0,0);
 
 		this[PRIVATE.saveRectInfo](this.operArea.offsetLeft,this.operArea.offsetTop,newWidth,newHeight);
-		this[PRIVATE.state] = ImageLayer.TRANSFORM;
+		this[PRIVATE.status] = ImageLayer.TRANSFORM;
 		this[PRIVATE.isClearImageArea] = true; 
 		this[PRIVATE.scaleFlag] = true; //旋转后需要更新缩放里保存的备份图像
 		updateRect(this);
@@ -981,13 +999,13 @@
 		/**
 		 *	将图像左上角移动到(x,y)点
 		 */
-		if(!(this[PRIVATE.state]===ImageLayer.FREEING || this[PRIVATE.state] ===ImageLayer.TRANSFORM)){
+		if(!(this[PRIVATE.status]===ImageLayer.FREEING || this[PRIVATE.status] ===ImageLayer.TRANSFORM)){
 			return;
 		}
 		this[PRIVATE.x] = x;
 		this[PRIVATE.y] = y;
 		this[PRIVATE.saveRectInfo](x,y,this.imageArea.width,this.imageArea.height);
-		this[PRIVATE.state] = ImageLayer.TRANSFORM;
+		this[PRIVATE.status] = ImageLayer.TRANSFORM;
 		this[PRIVATE.rotateFlag] = true;
 	}
 
@@ -998,7 +1016,7 @@
 		 *	2、更新图层信息
 		 *	3、将缩放后的图像备份，为旋转操作做准备
 		 */
-		if(!(this[PRIVATE.state]===ImageLayer.FREEING || this[PRIVATE.state] ===ImageLayer.TRANSFORM)){
+		if(!(this[PRIVATE.status]===ImageLayer.FREEING || this[PRIVATE.status] ===ImageLayer.TRANSFORM)){
 			return;
 		}
 		/****** 备份图像 *******/
@@ -1020,7 +1038,7 @@
 		this[PRIVATE.saveRectInfo](x,y,width,height);			// 更新位置信息
 		this[PRIVATE.saveImage](); 								// 将当前图像在临时区域备份
 		this[PRIVATE.rotateFlag] = true; 						// 缩放后需要更新旋转中矩形边框信息
-		this[PRIVATE.state] = ImageLayer.TRANSFORM;
+		this[PRIVATE.status] = ImageLayer.TRANSFORM;
 	}
 
 	/************* 定义图像裁剪相关函数 *************/
@@ -1065,7 +1083,7 @@
 		 *	1、如果不是剪切的状态直接退出
 		 *	2、将剪切后的图像移动到原图像中间
 		 */
-		if(this[PRIVATE.state] !== ImageLayer.CLIP){
+		if(this[PRIVATE.status] !== ImageLayer.CLIP){
 			return;
 		}
 		let rectWidth = operRect[1].x - operRect[0].x;
@@ -1085,11 +1103,11 @@
 		/**
 		 *	在GLOBAL_CANVAS上确定截取大小
 		 */
-		if(this[PRIVATE.state]!==ImageLayer.FREEING){
+		if(this[PRIVATE.status]!==ImageLayer.FREEING){
 			return;
 		}
 
-		this[PRIVATE.state] = ImageLayer.CLIP;
+		this[PRIVATE.status] = ImageLayer.CLIP;
 		let that = this;
 		GLOBAL_CANVAS.onmousedown = function(e){
 			let info = this.getBoundingClientRect();
@@ -1137,10 +1155,10 @@
 		/**
 		 *	通过GLOBAL_CANVAS代理鼠标事件
 		 */
-		if(this[PRIVATE.state]!==ImageLayer.FREEING){
+		if(this[PRIVATE.status]!==ImageLayer.FREEING){
 			return;
 		}
-		this[PRIVATE.state] = ImageLayer.PANCIL;
+		this[PRIVATE.status] = ImageLayer.PANCIL;
 		this[PRIVATE.initPancil]();
 		GLOBAL_CXT.clearRect(0,0,GLOBAL_CANVAS.width,GLOBAL_CANVAS.height);
 		// GLOBAL_CANVAS.style.display = "inline";
@@ -1153,10 +1171,10 @@
 		/**
 		 *	通过GLOBAL_CANVAS代理鼠标事件
 		 */
-		if(this[PRIVATE.state]!==ImageLayer.FREEING){
+		if(this[PRIVATE.status]!==ImageLayer.FREEING){
 			return;
 		}
-		this[PRIVATE.state] = ImageLayer.MOSAIC;
+		this[PRIVATE.status] = ImageLayer.MOSAIC;
 		this[PRIVATE.initMosaic](type,value);
 		GLOBAL_CXT.clearRect(0,0,GLOBAL_CANVAS.width,GLOBAL_CANVAS.height);
 		// GLOBAL_CANVAS.style.display = "inline";
@@ -1168,10 +1186,10 @@
 		/**
 		 *	通过GLOBAL_CANVAS代理鼠标事件
 		 */
-		if(this[PRIVATE.state]!==ImageLayer.FREEING){
+		if(this[PRIVATE.status]!==ImageLayer.FREEING){
 			return;
 		}
-		this[PRIVATE.state] = ImageLayer.ERASER;
+		this[PRIVATE.status] = ImageLayer.ERASER;
 		this[PRIVATE.initEraser](value);
 		GLOBAL_CXT.clearRect(0,0,GLOBAL_CANVAS.width,GLOBAL_CANVAS.height);
 		// GLOBAL_CANVAS.style.display = "inline";
@@ -1244,7 +1262,7 @@
 			return;
 		}
 		this.operCxt.lineTo(point.x-info.x,point.y-info.y);
-		if(this[PRIVATE.state] === ImageLayer.PANCIL){
+		if(this[PRIVATE.status] === ImageLayer.PANCIL){
 			this.operCxt.strokeStyle = point.color;
 		}else{
 			this.operCxt.strokeStyle = point.pattern;
@@ -1331,7 +1349,7 @@
 	}
 
 	ImageLayer.prototype.saveImageMattingArea = function(){ // 保存抠图
-		if(this[PRIVATE.state] !== ImageLayer.IMAGEMATTING){
+		if(this[PRIVATE.status] !== ImageLayer.IMAGEMATTING){
 			return;
 		}
 		this.operCxt.clearRect(0,0,this.operArea.width,this.operArea.height);
@@ -1355,10 +1373,10 @@
 		 *	1、鼠标点击位置保存为控制点，存放在PATH数组
 		 *	2、鼠标移动过程鼠标仍为点击状态，每隔interval取一个控制点，存放在PATH数组
 		 */
-		if(this[PRIVATE.state] !== ImageLayer.FREEING){
+		if(this[PRIVATE.status] !== ImageLayer.FREEING){
 			return;
 		}
-		this[PRIVATE.state] = ImageLayer.IMAGEMATTING;
+		this[PRIVATE.status] = ImageLayer.IMAGEMATTING;
 		PATH.splice(0,PATH.length);					//初始化点集
 
 		GLOBAL_CANVAS.style.cursor = "crosshair";
