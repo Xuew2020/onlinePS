@@ -69,12 +69,15 @@ input[type=number]::-webkit-inner-spin-button{
 /* 拾色器 */
 
 /* 画笔 */
-#hb-panel>div{
+#hb-panel>div,#yqt-panel>div,#xpc-panel>div{
 	margin-bottom: 15px;
 }
-#hb-panel>div>input{
+#hb-panel>div>input,#yqt-panel>div>input{
 	width: 120px;
 }
+/* 油漆桶 */
+
+/* 橡皮擦 */
 
 /* 尺子 */
 

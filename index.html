@@ -56,6 +56,7 @@
 							<li>尺子</li>
 							<li>橡皮擦</li>
 							<li>吸管工具</li>
+							<li>填充工具</li>
 							<li>文本工具</li>
 							<li>绘图工具</li>
 						</ul>
@@ -78,6 +79,7 @@
 					<li title="抠图" id="kt"><span class="iconfont">&#xe683;</span></li>
 					<li title="拾色器" id="ssq"><span class="iconfont">&#xe64e;</span></li>
 					<li title="画笔" id="hb"><span class="iconfont">&#xe60d;</span></li>
+					<li title="油漆桶" id="yqt"><span class="iconfont">&#xe679;</span></li>
 					<li title="橡皮擦" id="xpc"><span class="iconfont">&#xe698;</span></li>
 					<li title="尺子" id="cz"><span class="iconfont">&#xe62c;</span></li>
 					<li title="滤镜" id="lj"><span class="iconfont">&#xe669;</span></li>
@@ -310,6 +312,19 @@
 			<div>
 				<label for="hb-color">画笔颜色：</label>
 				<input type="color" id="hb-color" value="#ff0000" />
+			</div>
+		</div>
+	</template>
+	<!-- 油漆桶面板 -->
+	<template id="yqt-template">
+		<div id="yqt-panel" class="panel">
+			<div>
+				<label for="yqt-power">力度：</label>
+				<input type="range" id="yqt-power" min="1" max="255" value="30" step="1" />
+			</div>
+			<div>
+				<label for="yqt-color">颜色：</label>
+				<input type="color" id="yqt-color" value="#ffffff" />
 			</div>
 		</div>
 	</template>

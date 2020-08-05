@@ -314,6 +314,41 @@
 			ImageLayer.setBrushColor(hb_color.value);
 		});
 
+		// 油漆桶
+		that.$("#yqt")[0].addEventListener('click',function(){
+			
+			// that.currentImg.pancil();
+			initRoot();
+
+			let yqt_panel = root.querySelector('#yqt-panel');
+
+			if(!yqt_panel){
+				let template = that.$("#yqt-template")[0];
+				root.appendChild(template.content);
+				template.remove();				
+
+				let yqt_power = root.querySelector("#yqt-power");
+				let yqt_color = root.querySelector("#yqt-color");
+				yqt_power.addEventListener('change',function(){
+					that.resolve();
+					let yqt_color = root.querySelector("#yqt-color");
+					that.currentImg.paintBucket(yqt_color.value,this.value)
+				});
+				yqt_color.addEventListener('change',function(){
+					that.resolve();
+					let yqt_power = root.querySelector("#yqt-power");
+					that.currentImg.paintBucket(this.value,yqt_power.value)
+				});
+
+			}else{
+				yqt_panel.style.display = "block";
+			}
+
+			let yqt_power = root.querySelector("#yqt-power");
+			let yqt_color = root.querySelector("#yqt-color");
+			that.currentImg.paintBucket(yqt_color.value,yqt_power.value);
+		});
+
 		// 橡皮擦
 		that.$("#xpc")[0].addEventListener('click',function(){
 			
@@ -702,6 +737,7 @@
 			"ruler":{"name":"尺子","icon":"icon-chizi"},
 			"straw":{"name":"拾色器","icon":"icon-xiguan"},
 			"imagematting":{"name":"抠图","icon":"icon-koutu"},
+			"paintBucket":{"name":"油漆桶","icon":"icon-youqitong_huaban1"},
 			"1":{"name":"图像增强","icon":"icon-tiaozheng"}, // 图像增强
 		};
 
@@ -1074,6 +1110,7 @@
 			return;
 		}
 		if(this.currentImg.getStatus() !== ImageLayer.FREEING && this.historyIndex.currentHistory !== this.currentImg.getHistoryLength()){
+			console.log("update");
 			this.currentImg.removeHistory(this.historyIndex.currentHistory);
 			this.historyIndex.historyLength = this.currentImg.getHistoryLength(); // 更新历史记录长度
 		}

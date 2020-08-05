@@ -149,7 +149,7 @@
 	/************* 画笔工具 *************/
 
 	const BRUSH = {x:0,y:0,size:3,color:"red",pattern:null}; //笔刷对象 
-	BRUSH.draw = function(canvas){
+	BRUSH.draw = function(canvas){ // 画笔位置
 		let cxt = canvas.getContext('2d');
 		cxt.clearRect(0,0,canvas.width,canvas.height);
 		cxt.save();
@@ -517,6 +517,7 @@
 	ImageLayer.RULER =	"ruler";				// 度量工具
 	ImageLayer.STRAW = "straw";					// 吸管工具 -- 取色
 	ImageLayer.IMAGEMATTING = "imagematting";	// 抠图
+	ImageLayer.PAINTBUCKET = "paintBucket";		// 油漆桶 -- 颜色替换
 
 	/************* 属性和方法私有化 *************/
 	const PRIVATE = {										
@@ -648,10 +649,10 @@
 	ImageLayer.prototype[PRIVATE.reset] = function(){ // 重置所有事件及标记
 
 		/*** 重置操作区域的所有事件 ***/
-		this.operArea.onmousedown = null;
-		this.operArea.onmousemove = null;
-		this.operArea.onmouseup = null;
-		this.operArea.onmouseout = null;
+		// this.operArea.onmousedown = null;
+		// this.operArea.onmousemove = null;
+		// this.operArea.onmouseup = null;
+		// this.operArea.onmouseout = null;
 		this.operCxt.globalCompositeOperation = "source-over" // 恢复默认图像组合效果
 		this.operCxt.clearRect(0,0,this.operArea.width,this.operArea.height);
 		/*** 重置共享画布的所有事件 ***/
@@ -1109,6 +1110,7 @@
 
 		this[PRIVATE.status] = ImageLayer.CLIP;
 		let that = this;
+		GLOBAL_CANVAS.style.cursor = "crosshair";
 		GLOBAL_CANVAS.onmousedown = function(e){
 			let info = this.getBoundingClientRect();
 			console.log("clip");
@@ -1135,12 +1137,14 @@
 			}
 			this.onmouseup = function(){
 				this.style.cursor = "default";
+				GLOBAL_CANVAS.style.cursor = "default";
 				this.onmousedown = null;
 				this.onmousemove = null;
 				resizeRect(this);
 			}
 			this.onmouseout = function(){
 				this.style.cursor = "default";
+				GLOBAL_CANVAS.style.cursor = "default";
 				this.onmousedown = null;
 				this.onmousemove = null;
 				resizeRect(this);
@@ -1452,6 +1456,92 @@
 		}
 		GLOBAL_CANVAS.onmouseup = function(){
 			isMouseDown = false;
+		}
+	}
+
+	/************* 油漆桶 *************/
+	function getGrayValue(r,g,b){ // 计算灰度值
+		return r*0.3+g*0.6+b*0.1;
+	}
+
+	function replaceColor(imageData,x,y,replace_color,offset){ 
+		let re = /^#[a-fA-F\d]{6}$/;
+		if(!re.test(replace_color)){
+			return false;
+		}
+		let {width,height,data} = imageData;
+		x = Math.floor(x);
+		y = Math.floor(y);
+		let [R,G,B] = replace_color.substring(1).match(/[a-fA-F\d]{2}/g); 
+		R = Number.parseInt(R,16);
+		G = Number.parseInt(G,16);
+		B = Number.parseInt(B,16);
+		let index = (y*width+x)*4;
+		let grayColor = getGrayValue(data[index],data[index+1],data[index+2]); // 点击处灰度值
+		let vis = Array.from({length:height},x=>Array.from({length:width}, y=>0)); // 访问标记
+		let move_dir = [[0,1],[1,0],[0,-1],[-1,0]]; // 广搜方向
+		let dir_nums = move_dir.length;
+		let queue = [{x,y}];
+		vis[y][x] = 1;
+		
+		while(queue.length > 0){
+			let pos = queue.shift();
+			// 替换颜色
+			index = (pos.y*width+pos.x)*4;
+			data[index] = R;
+			data[index+1] = G;
+			data[index+2] = B;
+
+			for(let i=0; i<dir_nums; i++){
+				let x = pos.x + move_dir[i][0];
+				let y = pos.y + move_dir[i][1];
+				index = (y*width+x)*4;
+				let color = getGrayValue(data[index],data[index+1],data[index+2]);
+				if(x>0 && x<width && y>0 && y<height && vis[y][x] !== 1 && color-offset<=grayColor && color+offset >= grayColor){
+					queue.push({x,y});
+					vis[y][x] = 1; // 打标记
+				}
+			}
+		}
+		return true;
+	}
+
+	ImageLayer.prototype.paintBucket = function(replace_color="#FFFFFF",offset=30){
+		/**
+		 *  通过GLOBAL_CANVAS代理鼠标事件
+		 *	获取点击区域灰度值，利用广搜替换掉所有相似颜色
+		 */
+		if(this[PRIVATE.status] !== ImageLayer.FREEING){
+			return;
+		}
+		this[PRIVATE.status] = ImageLayer.PAINTBUCKET;
+		// console.log(replace_color,offset);
+
+		this.operCxt.drawImage(this.imageArea,0,0);
+		this.imageArea.style.display = "none";
+
+		let that = this;
+		let rectInfo = this[PRIVATE.rectInfo];
+		function checkPoint(x,y){	// 判断点是否在图像上
+			if(x<rectInfo.x || x>rectInfo.x+rectInfo.width || y<rectInfo.y || y>rectInfo.y+rectInfo.height){
+				return false;
+			}
+			return true;
+		}
+
+		GLOBAL_CANVAS.onmousedown = function(e){
+			let info = this.getBoundingClientRect();
+			e = e || window.event;
+			let x = e.clientX - info.x;
+			let y = e.clientY - info.y;
+			if(!checkPoint(x,y)){
+				return;
+			}
+			let imageData = that.operCxt.getImageData(0,0,rectInfo.width,rectInfo.height);
+
+			if(replaceColor(imageData,x-rectInfo.x,y-rectInfo.y,replace_color,offset)){
+				that.operCxt.putImageData(imageData,0,0);
+			}
 		}
 	}
 

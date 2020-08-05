@@ -55,7 +55,7 @@ let pageConfig = {
 		});
 
 		//工具
-		let gj_els = ["#jq","#kt","#hb","#cz","#xpc","#ssq","#wbgj","#htgj"];
+		let gj_els = ["#jq","#kt","#hb","#cz","#xpc","#ssq","#yqt","#wbgj","#htgj"];
 		menus[4].querySelectorAll('li').forEach((el,index)=>{
 			el.addEventListener('click',function(){
 				that.$(gj_els[index])[0].click();

@@ -31,6 +31,7 @@
 			<button onclick="image.eraser(0.3)">橡皮擦</button>
 			<button onclick="ImageLayer.ruler(image,(res)=>console.log(res))">尺子</button>
 			<button onclick="ImageLayer.straw(image,Images,(res)=>console.log(res))">吸管</button>
+			<button onclick="image.paintBucket()">油漆桶</button>
 			<input type="range" name="" min="-255" max="255" value="0" oninput="image.filter('brightness',this.value)"> 亮度
 			<input type="range" name="" min="0" step="0.01" max="1" value="1" oninput="image.filter('opacity',this.value)"> 透明度
 			<!-- <input type="range" name="" min="-360" max="360" step="1" value="0" oninput="image.rotate(this.value)"> 旋转 -->
