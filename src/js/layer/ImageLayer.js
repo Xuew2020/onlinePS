@@ -424,6 +424,58 @@
 			}
 			return true;
 		},
+		gaussianBlur:function(imageData,value={ksize:10,sigma:1}){ // 高斯模糊 -- 分离实现提高效率
+			let {data,width,height} = imageData;
+			let {ksize,sigma} = value;
+			if(!(ksize&1)){  // 高斯模糊卷积核必须为奇数
+				ksize++;
+			}
+
+			// 计算一维高斯核  --- 正态分布：f(x) = [1/(sigma*sqrt(2pi))]*e^[(-(x-origin)^2)/(2*sigma^2)];
+			let origin = (ksize-1)/2;
+			let gauss_sum = 0;
+			let kernel = [];
+			let divisor = 2*Math.pow(sigma,2);
+			for(let x=0; x<ksize; x++){
+				kernel[x] = Math.exp(-Math.pow(x-origin,2)/divisor);  // 结果需要归一化处理，e之前的可忽略
+				gauss_sum += kernel[x];
+			}
+			for(let x=0; x<ksize; x++){ 
+				kernel[x] /= gauss_sum;
+			}
+			// 卷积运算方法
+			function convolution(n,m,getIndex){
+				let gauss_sum = 0;
+				let r,g,b;
+				let x,image_index,kernel_index;
+				for(let i=0; i<n; i++){
+					for(let j=0; j<m; j++){
+						r = g = b = gauss_sum = 0;
+						for(let k=-origin; k<=origin; k++){
+							x = j + k;
+							if(x<0 || x>=m){
+								continue;
+							}
+							image_index = getIndex(i,x);
+							kernel_index = k + origin;
+							r += data[image_index+0]*kernel[kernel_index];
+							g += data[image_index+1]*kernel[kernel_index];
+							b += data[image_index+2]*kernel[kernel_index];
+							gauss_sum += kernel[kernel_index];
+						}
+						image_index = getIndex(i,j);
+						data[image_index+0] = r/gauss_sum;
+						data[image_index+1] = g/gauss_sum;
+						data[image_index+2] = b/gauss_sum;
+					}
+				}
+			}
+			// 对水平和垂直方向进行卷积计算 -- 高斯函数的可分离性
+			convolution(height,width,(x,y)=>(x*width+y)*4); // 水平方向
+			convolution(width,height,(x,y)=>(y*width+x)*4); // 垂直方向
+
+			return true;
+		},
 		sepia:function(imageData){               //复古
 			let {data,width,height} = imageData;
 			for(let i=0; i<height; i++){
