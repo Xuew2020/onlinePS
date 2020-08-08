@@ -411,7 +411,7 @@
 		// 滤镜
 
 		let base_dir = "./src/images/";
-		let lj_styles = ["invert","grayscale","blur","sepia","mosaic"];
+		let lj_styles = ["invert","grayScale","blur","sepia","mosaic"];
 		let lj_names = ["反色","黑白","模糊","复古","马赛克"];
 		let lj_imgsrc = ["invert.png","grayscale.png","blur.png","sepia.png","mosaic.png"];
 		that.$("#lj")[0].addEventListener('click',function(){
