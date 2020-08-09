@@ -168,6 +168,7 @@
 		});
 
 		// 图像增强
+		let txzq_styles = ["sharpen","hsv","hsv","brightness","contrast","colorChannel","colorChannel","colorChannel","opacity"];
 		that.$("#txzq")[0].addEventListener('click',function(){
 
 			initRoot();
@@ -178,25 +179,63 @@
 				root.appendChild(template.content);
 				template.remove();
 
-				// 亮度
-				root.querySelector("#brightness").addEventListener('input',function(){
-					that.currentImg.filter('brightness',this.value);
-					// that.currentImg.pageInfo.data.brightness = this.value;
-				});
+				// // 亮度
+				// root.querySelector("#brightness").addEventListener('input',function(){
+				// 	that.currentImg.filter('brightness',this.value);
+				// 	// that.currentImg.pageInfo.data.brightness = this.value;
+				// });
 
-				// 透明度
-				root.querySelector("#opacity").addEventListener('input',function(){
-					that.currentImg.filter('opacity',this.value);
-					// that.currentImg.pageInfo.data.opacity = this.value;
+				// // 透明度
+				// root.querySelector("#opacity").addEventListener('input',function(){
+				// 	that.currentImg.filter('opacity',this.value);
+				// 	// that.currentImg.pageInfo.data.opacity = this.value;
+				// });
+				let opers = root.querySelectorAll("#txzq-panel>div>input[type=range]");
+				opers.forEach((el,index)=>{
+					el.addEventListener('input',function(){
+						let value;
+						// console.log(this.id);
+						switch(this.id){
+							case "sharpen":
+								value = {rate:this.value,type:1};
+								break;
+							case "hue":
+								value = {rate:this.value,type:1};
+								break;
+							case "stauration":
+								value = {rate:this.value,type:2};
+								break;
+							case "R-Channel":
+								value = {r:this.value,g:1,b:1};
+								break;
+							case "G-Channel":
+								value = {r:1,g:this.value,b:1};
+								break;
+							case "B-Channel":
+								value = {r:1,g:1,b:this.value};
+								break;
+							default:
+								value = this.value;
+						}
+						that.currentImg.filter(txzq_styles[index],value);
+					});
 				});
 
 			}else{
 				txzq_panel.style.display = "block";
 			}
 
-			// 初始化
-			root.querySelector("#brightness").value = 0;
-			root.querySelector("#opacity").value = 1;
+			let opers = root.querySelectorAll("#txzq-panel>div>input[type=range]");
+			opers.forEach((el)=>{
+				switch(el.id){
+					case "sharpen":
+					case "brightness":
+						el.value = 0;
+						break;
+					default:
+						el.value = 1;
+				}
+			})
 		});
 
 		// 剪切
@@ -411,9 +450,12 @@
 		// 滤镜
 
 		let base_dir = "./src/images/";
-		let lj_styles = ["invert","grayScale","blur","sepia","mosaic"];
-		let lj_names = ["反色","黑白","模糊","复古","马赛克"];
-		let lj_imgsrc = ["invert.png","grayscale.png","blur.png","sepia.png","mosaic.png"];
+		let lj_styles = ["invert","blackAndWhiteInverse","grayScale","binary","blur","sepia","pancil",
+						 "woodcarving_1","woodcarving_2","casting","freezing","medianBlur","gaussianBlur","mosaic"];
+		let lj_names = ["反色","黑白底片","灰度图像","二值图像·","柔化","复古","铅笔画",
+						"版画","黑白版画","熔铸","冰冻","美颜祛斑","模糊","马赛克"];
+		let lj_imgsrc = ["invert.png","blackAndWhiteInverse.png","grayScale.png","binary.png","blur.png","sepia.png","pancil.png",
+						 "woodcarving_1.png","woodcarving_2.png","casting.png","freezing.png","medianBlur.png","gaussianBlur.png","mosaic.png"];
 		that.$("#lj")[0].addEventListener('click',function(){
 			
 			initRoot();
@@ -433,7 +475,13 @@
 					img.alt = lj_names[index];
 					name.textContent = lj_names[index];
 					el.addEventListener('click',function(){
-						that.currentImg.filter(lj_styles[index]);
+						if(lj_styles[index] === "woodcarving_1"){
+							that.currentImg.filter("woodcarving",1);
+						}else if(lj_styles[index] === "woodcarving_2"){
+							that.currentImg.filter("woodcarving",2);
+						}else{
+							that.currentImg.filter(lj_styles[index]);
+						}
 					});
 				});
 
@@ -444,7 +492,7 @@
 		});
 
 		// 模糊
-		let mh_styles = ["blur","mosaic"];
+		let mh_styles = ["blur","medianBlur","gaussianBlur","mosaic"];
 		that.$("#mh")[0].addEventListener('click',function(){
 			
 			initRoot();

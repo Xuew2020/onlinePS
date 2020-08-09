@@ -25,22 +25,29 @@
 			<input type="file" name="File"/>
 			<button id="Filter" onclick="image.filter('invert');">反色滤镜</button>
 			<button id="Filter" onclick="image.filter('grayScale');">灰度滤镜</button>
+			<button id="Filter" onclick="image.filter('blackAndWhiteInverse');">黑白底片</button>
 			<button id="Filter" onclick="image.filter('binary');">黑白滤镜</button>
 			<button id="Filter" onclick="image.filter('blur');">模糊滤镜</button>
 			<button id="Filter" onclick="image.filter('medianBlur');">中值滤波</button>
 			<button id="Filter" onclick="image.filter('gaussianBlur');">高斯模糊</button>
 			<button id="Filter" onclick="image.filter('sepia');">复古滤镜</button>
-			<button id="Filter" onclick="image.filter('woodcarving');">木雕效果</button>freezing
+			<input type="range" name="" min="0" max="255" value="0" step="1" oninput="image.filter('pancil',this.value)"> 铅笔画
+			<!-- <button id="Filter" onclick="image.filter('woodcarving');">木雕效果</button> -->
 			<button id="Filter" onclick="image.filter('casting');">熔铸效果</button>
 			<button id="Filter" onclick="image.filter('freezing');">冰冻效果</button>
-			<button id="Filter" onclick="image.filter('pancil',1);">铅笔画-1</button>
-			<button id="Filter" onclick="image.filter('pancil',2);">铅笔画-2</button>
+			<button id="Filter" onclick="image.filter('woodcarving',1);">木雕效果-1</button>
+			<button id="Filter" onclick="image.filter('woodcarving',2);">木雕效果-2</button>
+			<input type="range" name="" min="0" max="3" value="0" step="0.1" oninput="image.filter('sharpen',{rate:this.value});"> 锐化
+			<!-- <button id="Filter" onclick="image.filter('sharpen',{rate:0.5,type:1});">锐化</button> -->
 			<button onclick="image.mosaic('mosaic',10)">马赛克</button>
 			<button onclick="image.eraser(0.3)">橡皮擦</button>
 			<button onclick="ImageLayer.ruler(image,(res)=>console.log(res))">尺子</button>
 			<button onclick="ImageLayer.straw(image,Images,(res)=>console.log(res))">吸管</button>
 			<button onclick="image.paintBucket()">油漆桶</button>
 			<input type="range" name="" min="-255" max="255" value="0" oninput="image.filter('brightness',this.value)"> 亮度
+			<input type="range" name="" min="0.3" max="1.7" value="1" step="0.1" oninput="image.filter('contrast',this.value)"> 对比度
+			<input type="range" name="" min="0" max="2" value="1" step="0.1" oninput="image.filter('hsv',{rate:this.value,type:1})"> 色调
+			<input type="range" name="" min="0" max="2" value="1" step="0.1" oninput="image.filter('hsv',{rate:this.value,type:2})"> 饱和度
 			<input type="range" name="" min="0" step="0.01" max="1" value="1" oninput="image.filter('opacity',this.value)"> 透明度
 			<input type="range" name="" min="0" step="0.01" max="2" value="1" oninput="image.filter('colorChannel',{r:this.value,g:1,b:1})"> R通道
 			<input type="range" name="" min="0" step="0.01" max="2" value="1" oninput="image.filter('colorChannel',{r:1,g:this.value,b:1})"> G通道

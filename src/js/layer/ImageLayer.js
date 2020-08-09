@@ -369,10 +369,65 @@
 
 
 	/************* 定义滤镜效果 *************/
-	function getGrayValue(r,g,b){ // 计算灰度值
-		return r*0.3+g*0.6+b*0.1;
+	function rgbToGray(r,g,b){ // 计算灰度值
+		return r*0.299+g*0.587+b*0.114;
 	}
-
+	function rgbToHsv(r,g,b){
+		let h,s,v;
+		v = Math.max(r,g,b);
+		let min = Math.min(r,g,b);
+		if(v === 0){
+			s = 0;
+		}else{
+			s = (v-min)/v;
+		}
+		switch(v){
+			case min:
+				h = 0;
+				break;
+			case r:
+				h = (60*(g-b))/(v-min);
+				break;
+			case g:
+				h = 120 + (60*(b-r))/(v-min);
+				break;
+			case b:
+				h = 240 + (60*(r-g))/(v-min);
+				break;
+		}
+		if(h<0){
+			h += 360;
+		}
+		return [h,s,v];
+	}
+	function hsvToRgb(h,s,v){
+		let r,g,b;
+		let hi = Math.floor(h/60)%6;
+		let f = h/60-hi;
+		let p = v*(1-s);
+		let q = v*(1-f*s);
+		let t = v*(1-(1-f)*s);
+		switch(hi){
+			case 0:
+				[r,g,b] = [v,t,p];
+				break;
+			case 1:
+				[r,g,b] = [q,v,p];
+				break;
+			case 2:
+				[r,g,b] = [p,v,t];
+				break;
+			case 3:
+				[r,g,b] = [p,q,v];
+				break;
+			case 4:
+				[r,g,b] = [t,p,v];
+				break;
+			case 5:
+				[r,g,b] = [v,p,q];
+		}
+		return [r,g,b];
+	}
 	const FILTER = {										
 		invert:function(imageData){             //反色
 			let {data,width,height} = imageData;
@@ -406,7 +461,7 @@
 			for(let i=0; i<height; i++){
 				for(let j=0; j<width; j++){
 					let index = (i*width+j)*4;
-					let value = getGrayValue(data[index],data[index+1],data[index+2]);
+					let value = rgbToGray(data[index],data[index+1],data[index+2]);
 					data[index+0] = value;
 					data[index+1] = value;
 					data[index+2] = value;
@@ -414,7 +469,7 @@
 			}
 			return true;
 		},
-		binary:function(imageData){ //黑白
+		binary:function(imageData){ //二值图像
 			let {data,width,height} = imageData;
 			let color,index,grayColor;
 			let threshold = 127;
@@ -434,6 +489,12 @@
 			}
 			return true;
 		},
+		blackAndWhiteInverse:function(imageData){	//黑白底片
+			/* 先进行反色操作，再进行灰度处理 */
+			this.invert(imageData);
+			this.grayScale(imageData);
+			return true;
+		},
 		casting:function(imageData){            // 熔铸
 			/*
 				r = r*128/(g+b+1);
@@ -451,7 +512,7 @@
 			}
 			return true;
 		},
-		freezing:function(imageData){            // 熔铸
+		freezing:function(imageData){            // 冰冻
 			/*
 				r = (r-b-g)*(3/2);
 				g = (g-b-r)*(3/2);
@@ -481,10 +542,11 @@
 			}
 			return true;
 		},
-		woodcarving:function(imageData,value = 30){ //木雕效果
+		pancil:function(imageData,value = 15){ //铅笔画
 			/* 当前像素与周围像素对比，
 			   判断是否有一点差值绝对值大于等于阈值，
 			   若有，则为轮廓当前设为白色，反之设为黑色 */
+			console.log(value);
 			let {data,width,height} = imageData;
 			let threshold = value;
 			let nextPixels = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]; // 周围8个位置
@@ -495,7 +557,7 @@
 			for(let i=0; i<height; i++){
 				for(let j=0; j<width; j++){
 					current_index = (i*width+j)*4;
-					current_pixel = getGrayValue(data[current_index+0],data[current_index+1],data[current_index+2]);
+					current_pixel = rgbToGray(data[current_index+0],data[current_index+1],data[current_index+2]);
 					is_outline = false;
 					for(let k = 0; k<8; k++){
 						let x = i + nextPixels[k][0];
@@ -504,7 +566,7 @@
 							continue;
 						}
 						next_index = (x*width+y)*4;
-						next_pixel = getGrayValue(data[next_index+0],data[next_index+1],data[next_index+2]);
+						next_pixel = rgbToGray(data[next_index+0],data[next_index+1],data[next_index+2]);
 						if(Math.abs(current_pixel-next_pixel)>=threshold){
 							is_outline = true;
 							break;
@@ -526,9 +588,9 @@
 			});
 			return true;
 		},
-		pancil:function(imageData,value = 1){ //铅笔画
+		woodcarving:function(imageData,value = 1){ //木雕效果
 			/*
-				利用图像边缘检测算法实现
+				利用Sobel边缘检测算法实现
 				Sobel算子：
 				kernelX=[[-1,0,1],   kernelY=[[-1,-2,-1], 
 				 		 [-2,0,2],			  [ 0, 0, 0],
@@ -552,12 +614,13 @@
 			}
 			let tmpData = new Uint8ClampedArray(height*width*4);
 			let index,Gx,Gy,G;
+			this.grayScale(imageData);	//转成灰度图
 			function calc(i,j,k,kernel){ 
 				let x,y,index;
 				x = i + kernel[k][0];
 				y = j + kernel[k][1];
 				index = (x*width+y)*4;
-				return getGrayValue(data[index+0],data[index+1],data[index+2])*kernel[k][2];
+				return data[index]*kernel[k][2];
 			}
 			for(let i=1; i<height-1; i++){
 				for(let j=1; j<width-1; j++){
@@ -580,7 +643,54 @@
 			});
 			return true;
 		},
-		blur:function(imageData,value = 3){             //均值模糊 -- 柔化
+		sharpen:function(imageData,value = {rate:1,type:0}){ // type:1 锐化结果 type：其他 只显示边缘信息
+			/*
+				利用laplacian边缘检测算法实现
+				laplacian算子：
+				kernel = [[-1,-1,-1], 或 [[ 0,-1, 0],
+						  [-1, 8,-1],	  [-1, 4,-1],
+						  [-1,-1,-1]] 	  [ 0,-1, 0]]
+				原图像加上原图像与laplacian算子卷积结果完成锐化
+			*/
+			let {data,width,height} = imageData;
+			let kernel = [[-1,-1,-1],[-1,0,-1],[-1,1,-1],[0,-1,-1],[0,0,8],[0,1,-1],[1,-1,-1],[1,0,-1],[1,1,-1]];
+			// let kernel = [[-1,0,-1],[0,-1,-1],[0,0,4],[0,1,-1],[0,1,-1]];
+			let tmpData = new Uint8ClampedArray(height*width*4);
+			let index,x,y,G;
+			let kernel_size = kernel.length;
+			for(let i=1; i<height-1; i++){
+				for(let j=1; j<width-1; j++){
+					G = 0;
+					for(let k=0; k<kernel_size; k++){
+						x = i + kernel[k][0];
+						y = j + kernel[k][1];
+						index = (x*width+j)*4;
+						G += rgbToGray(data[index+0],data[index+1],data[index+2])*kernel[k][2];
+					}
+					index = (i*width+j)*4;
+					tmpData[index+0] = G;
+					tmpData[index+1] = G;
+					tmpData[index+2] = G;
+					tmpData[index+3] = data[index+3];
+				}
+			}
+			if(value.type === 0){
+				data.forEach((value,index,array)=>{
+					array[index] = tmpData[index];
+				});
+			}else{
+				for(let i=1; i<height-1; i++){
+					for(let j=1; j<width-1; j++){
+						index = (i*width+j)*4;
+						data[index+0] += tmpData[index+0]*value.rate;
+						data[index+1] += tmpData[index+1]*value.rate;
+						data[index+2] += tmpData[index+2]*value.rate;
+					}
+				}
+			}
+			return true;
+		},
+		blur:function(imageData,value = 1){             //均值模糊 -- 柔化
 			let {data,width,height} = imageData;
 			let blurRadius = value; //模糊半径
 			let tmpData = new Uint8ClampedArray(height*width*4);
@@ -655,7 +765,7 @@
 			});
 			return true;
 		},
-		gaussianBlur:function(imageData,value=3){ // 高斯模糊 -- 分离实现提高效率
+		gaussianBlur:function(imageData,value=5){ // 高斯模糊 -- 分离实现提高效率
 			let {data,width,height} = imageData;
 			let tmpData = new Uint8ClampedArray(height*width*4);
 			// 计算一维高斯核  --- 正态分布：f(x) = [1/(sigma*sqrt(2pi))]*e^[(-(x-origin)^2)/(2*sigma^2)];
@@ -763,6 +873,53 @@
 					data[index+0] += value;
 					data[index+1] += value;
 					data[index+2] += value;
+				}
+			}
+			return true;
+		},
+		contrast:function(imageData,value=1){ //对比度
+			/*
+				对比度：保持图像平均亮度不变，使亮的更亮，暗的更暗。
+				rgb = threshold + (rgb - threshold) * contrast
+				减少运算量threshold取127
+			*/
+			value = Number.parseFloat(value);
+			let {data,width,height} = imageData;
+			for(let i=0; i<height; i++){
+				for(let j=0; j<width; j++){
+					let index = (i*width+j)*4;
+					data[index+0] = 127 + (data[index+0] - 127) * value;
+					data[index+1] = 127 + (data[index+1] - 127) * value;
+					data[index+2] = 127 + (data[index+2] - 127) * value;
+				}
+			}
+			return true;
+		},
+		hsv:function(imageData,value = {rate:1,type:1}){	//色调、饱和度、亮度
+			let {data,width,height} = imageData;
+			let {rate,type} = value;
+			let r,g,b,h,s,v;
+			for(let i=0; i<height; i++){
+				for(let j=0; j<width; j++){
+					let index = (i*width+j)*4;
+					r = data[index+0];
+					g = data[index+1];
+					b = data[index+2];
+					[h,s,v] = rgbToHsv(r,g,b);
+					if(type === 1){
+						h = h*rate;
+						h = h<=360?h:h-360;
+					}else if(type === 2){
+						s = (s*rate);
+						s = s<=1?s:s-1;
+					}else{
+						v = (v*rate);
+						v = v<=255?v:v-255;
+					}
+					[r,g,b] = hsvToRgb(h,s,v);
+					data[index+0] = r;
+					data[index+1] = g;
+					data[index+2] = b;
 				}
 			}
 			return true;
@@ -1746,7 +1903,7 @@
 		G = Number.parseInt(G,16);
 		B = Number.parseInt(B,16);
 		let index = (y*width+x)*4;
-		let grayColor = getGrayValue(data[index],data[index+1],data[index+2]); // 点击处灰度值
+		let grayColor = rgbToGray(data[index],data[index+1],data[index+2]); // 点击处灰度值
 		let vis = Array.from({length:height},x=>Array.from({length:width}, y=>0)); // 访问标记
 		let move_dir = [[0,1],[1,0],[0,-1],[-1,0]]; // 广搜方向
 		let dir_nums = move_dir.length;
@@ -1765,7 +1922,7 @@
 				let x = pos.x + move_dir[i][0];
 				let y = pos.y + move_dir[i][1];
 				index = (y*width+x)*4;
-				let color = getGrayValue(data[index],data[index+1],data[index+2]);
+				let color = rgbToGray(data[index],data[index+1],data[index+2]);
 				if(x>=0 && x<width && y>=0 && y<height && vis[y][x] !== 1 && color-offset<=grayColor && color+offset >= grayColor){
 					queue.push({x,y});
 					vis[y][x] = 1; // 打标记
