@@ -451,11 +451,13 @@
 
 		let base_dir = "./src/images/";
 		let lj_styles = ["invert","blackAndWhiteInverse","grayScale","binary","blur","sepia","pancil",
-						 "woodcarving_1","woodcarving_2","casting","freezing","medianBlur","gaussianBlur","mosaic"];
-		let lj_names = ["反色","黑白底片","灰度图像","二值图像·","柔化","复古","铅笔画",
-						"版画","黑白版画","熔铸","冰冻","美颜祛斑","模糊","马赛克"];
-		let lj_imgsrc = ["invert.png","blackAndWhiteInverse.png","grayScale.png","binary.png","blur.png","sepia.png","pancil.png",
-						 "woodcarving_1.png","woodcarving_2.png","casting.png","freezing.png","medianBlur.png","gaussianBlur.png","mosaic.png"];
+						 "woodcarving_1","woodcarving_2","casting","freezing","medianBlur","gaussianBlur",
+						 "bilateralFilter","mosaic"];
+		let lj_names = ["反色","黑白底片","灰度图像","二值图像·","柔化效果","复古","铅笔画",
+						"版画","黑白版画","熔铸","冰冻","降噪","模糊效果","美颜祛斑","马赛克"];
+		let lj_imgsrc = ["invert.png","blackAndWhiteInverse.png","grayScale.png","binary.png","blur.png",
+						 "sepia.png","pancil.png","woodcarving_1.png","woodcarving_2.png","casting.png",
+						 "freezing.png","medianBlur.png","gaussianBlur.png","bilateralFilter.png","mosaic.png"];
 		that.$("#lj")[0].addEventListener('click',function(){
 			
 			initRoot();
@@ -492,7 +494,7 @@
 		});
 
 		// 模糊
-		let mh_styles = ["blur","medianBlur","gaussianBlur","mosaic"];
+		let mh_styles = ["blur","gaussianBlur","medianBlur","bilateralFilter","mosaic"];
 		that.$("#mh")[0].addEventListener('click',function(){
 			
 			initRoot();

@@ -42,9 +42,11 @@
 					<li>
 						<span>模糊</span>
 						<ul class="nav-sub">
-							<li>马赛克</li>
 							<li>均值模糊</li>
+							<li>中值模糊</li>
 							<li>高斯模糊</li>
+							<li>双边模糊</li>
+							<li>马赛克</li>
 						</ul>
 					</li>
 					<li>
@@ -459,6 +461,12 @@
 					<p>黑白</p>
 				</div>
 			</div>
+			<div>
+				<div class="lj-style">
+					<img src="pic/ah.jpg" alt=""/>
+					<p>黑白</p>
+				</div>
+			</div>
 		</div>
 	</template>
 	<!-- 模糊面板 -->
@@ -473,13 +481,16 @@
 				<input type="range" id="mh-kernel" min="1" max="10" value="1" step="1" />
 			</div>
 			<div>
-				<span>均值滤波</span>
+				<span>图像柔化</span>
 			</div>
 			<div>
-				<span>中值滤波</span>
+				<span>图像模糊</span>
 			</div>
 			<div>
-				<span>高斯滤波</span>
+				<span>污点修复</span>
+			</div>
+			<div>
+				<span>美颜祛斑</span>
 			</div>
 			<div>
 				<span>马赛克</span>

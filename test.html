@@ -19,7 +19,6 @@
 </head>
 <body>
 	<main>
-		<svg xmlns="http://www.w3.org/2000/svg" width="5" height="5" viewBox="0 0 5 5"><path fill="#414348" d="M0 0h1v1h-1zM1 1h1v1h-1zM2 2h1v1h-1zM3 3h1v1h-1zM4 4h1v1h-1z"/></svg>
 		<div id="panel"></div>
 		<article>
 			<input type="file" name="File"/>
@@ -30,6 +29,7 @@
 			<button id="Filter" onclick="image.filter('blur');">模糊滤镜</button>
 			<button id="Filter" onclick="image.filter('medianBlur');">中值滤波</button>
 			<button id="Filter" onclick="image.filter('gaussianBlur');">高斯模糊</button>
+			<button id="Filter" onclick="image.filter('bilateralFilter');">双边滤波</button>
 			<button id="Filter" onclick="image.filter('sepia');">复古滤镜</button>
 			<input type="range" name="" min="0" max="255" value="0" step="1" oninput="image.filter('pancil',this.value)"> 铅笔画
 			<!-- <button id="Filter" onclick="image.filter('woodcarving');">木雕效果</button> -->

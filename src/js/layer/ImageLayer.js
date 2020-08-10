@@ -774,14 +774,14 @@
 			let origin = value;
 			let gauss_sum = 0;
 			let kernel = [];
-			let divisor = 2*Math.pow(sigma,2);
+			let divisor = -2*Math.pow(sigma,2);
 			for(let x=0; x<ksize; x++){
-				kernel[x] = Math.exp(-Math.pow(x-origin,2)/divisor);  // 结果需要归一化处理，e之前的可忽略
-				gauss_sum += kernel[x];
+				kernel[x] = Math.exp(Math.pow(x-origin,2)/divisor);  // 结果需要归一化处理，e之前的可忽略
+				// gauss_sum += kernel[x];
 			}
-			for(let x=0; x<ksize; x++){ 
-				kernel[x] /= gauss_sum;
-			}
+			// for(let x=0; x<ksize; x++){ 
+			// 	kernel[x] /= gauss_sum;
+			// }
 			// 图像卷积运算方法
 			function convolution(n,m,getIndex){
 				let gauss_sum = 0;
@@ -816,6 +816,76 @@
 			// 对水平和垂直方向进行卷积计算 -- 高斯函数的可分离性
 			convolution(height,width,(x,y)=>(x*width+y)*4); // 水平方向
 			convolution(width,height,(x,y)=>(y*width+x)*4); // 垂直方向
+			return true;
+		},
+		bilateralFilter:function(imageData,value = 10){	//双边滤波
+			/*
+				再高斯模糊的基础上加入灰度值的考虑
+			*/
+			let {data,width,height} = imageData;
+			let tmpData = new Uint8ClampedArray(height*width*4);
+			let grayDate = {data:new Uint8ClampedArray(data),width,height};
+			this.grayScale(grayDate);
+			let ksize = value*2+1;
+			// let sigma_space = 0.3*[(ksize-1)*0.5-1]+0.8; 
+			let origin = value;
+			let sigma_space = 5;
+			let sigma_color = 35;
+			let divisor_color = -2*Math.pow(sigma_color,2);
+			let divisor_space = -2*Math.pow(sigma_space,2);
+			let color_weight = [];
+			let gauss_kernel = [];
+			for(let i=0; i<=255; i++){	 		// 灰度值预处理
+				color_weight[i] = Math.exp(i*i/divisor_color);
+			}
+			for(let i=0; i<ksize; i++){			// 高斯模板
+				for(let j=0; j<ksize; j++){
+					gauss_kernel.push({
+						x:i-origin,
+						y:j-origin,
+						value:Math.exp((Math.pow(i-origin,2)+Math.pow(j-origin,2))/divisor_space)
+					});
+				}	
+			}
+			let kernel_size = gauss_kernel.length;
+			let image_index,kernel_index,x,y;
+			let bilateral_sum = {r:0,g:0,b:0};
+			let r,g,b,rw,gw,bw;
+			for(let i=0; i<height; i++){	// 卷积
+				for(let j=0; j<width; j++){
+					bilateral_sum.r = 0;
+					bilateral_sum.g = 0;
+					bilateral_sum.b = 0;
+					r = g = b = 0;
+					image_index = (i*width+j)*4;
+					for(let k=0; k<kernel_size; k++){
+						x = i + gauss_kernel[k].x;
+						y = j + gauss_kernel[k].y;
+						if(x<0 || x>=height || y<0 || y>=width){
+							continue;
+						}
+						kernel_index = (x*width+y)*4;
+						rw = gauss_kernel[k].value*color_weight[Math.abs(data[image_index+0]-data[kernel_index+0])];
+						gw = gauss_kernel[k].value*color_weight[Math.abs(data[image_index+1]-data[kernel_index+1])];
+						bw = gauss_kernel[k].value*color_weight[Math.abs(data[image_index+2]-data[kernel_index+2])];
+						r += data[kernel_index+0]*rw;
+						g += data[kernel_index+1]*gw;
+						b += data[kernel_index+2]*bw;
+						bilateral_sum.r += rw;
+						bilateral_sum.g += gw;
+						bilateral_sum.b += bw;
+					}
+					tmpData[image_index+0] = r/bilateral_sum.r;
+					tmpData[image_index+1] = g/bilateral_sum.g;
+					tmpData[image_index+2] = b/bilateral_sum.b;
+					tmpData[image_index+3] = data[image_index+3];
+				}
+			}
+			console.log(data);
+			data.forEach((value,index,array)=>{
+				array[index] = tmpData[index];
+			});
+			console.log(data);
 			return true;
 		},
 		mosaic:function(imageData,value=5){		//马赛克
