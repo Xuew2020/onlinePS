@@ -529,6 +529,23 @@
 			}
 			return true;
 		},
+		mirroring:function(imageData){
+			let {data,width,height} = imageData;
+			let col = Math.floor((width-1)/2);
+			let len = width - 1;
+			let left,right;
+			for(let i=0; i<height; i++){
+				for(let j=0; j<=col; j++){
+					left = (i*width+j)*4;
+					right = (i*width+len-j)*4;
+					[data[left+0],data[right+0]] = [data[right+0],data[left+0]];
+					[data[left+1],data[right+1]] = [data[right+1],data[left+1]];
+					[data[left+2],data[right+2]] = [data[right+2],data[left+2]];
+					[data[left+3],data[right+3]] = [data[right+3],data[left+3]];
+				}
+			}
+			return true;
+		},
 		colorChannel:function(imageData,value = {r:1,g:1,b:1}){	// 颜色通道
 			let {data,width,height} = imageData;
 			let {r,g,b} = value;
@@ -588,7 +605,7 @@
 			});
 			return true;
 		},
-		woodcarving:function(imageData,value = 1){ //木雕效果
+		woodblock:function(imageData,value = 1){ //版画
 			/*
 				利用Sobel边缘检测算法实现
 				Sobel算子：
@@ -643,7 +660,7 @@
 			});
 			return true;
 		},
-		sharpen:function(imageData,value = {rate:1,type:0}){ // type:1 锐化结果 type：其他 只显示边缘信息
+		sharpen:function(imageData,value = {rate:1,type:1}){ // type:1 锐化结果 type：其他 只显示边缘信息
 			/*
 				利用laplacian边缘检测算法实现
 				laplacian算子：
@@ -881,16 +898,14 @@
 					tmpData[image_index+3] = data[image_index+3];
 				}
 			}
-			console.log(data);
 			data.forEach((value,index,array)=>{
 				array[index] = tmpData[index];
 			});
-			console.log(data);
 			return true;
 		},
-		mosaic:function(imageData,value=5){		//马赛克
+		mosaic:function(imageData,value=2){		//马赛克
 			let {data,width,height} = imageData;
-			let size = value;
+			let size = value*2+1;
 			let tmpData = new Uint8ClampedArray(height*width*4);
 			for(let i=0; i<height; i+=size){
 				for(let j=0; j<width; j+=size){
@@ -1005,6 +1020,17 @@
 			}
 			return true;
 		},
+		restore:function(imageData,value = []){		// 恢复原图像
+			let {data,width,height} = imageData;
+			if(value.length !== data.length){	// 不做处理直接退出
+				return true;
+			}
+			data.forEach((value,index,array)=>{
+				array[index] = value[index];
+			});
+			console.log("ok");
+			return true;
+		}
 	}
 	/************* 定义图层操作状态 *************/
 	ImageLayer.FREEING = "freeing";  			// 空闲状态
@@ -1222,8 +1248,12 @@
 	}
 
 	/************* 定义历史记录相关函数 *************/
-	ImageLayer.prototype.getHistory = function(){
-		return this[PRIVATE.history];
+	ImageLayer.prototype.getHistory = function(index = -1){
+		if(index<0 || index>=this.getHistoryLength()){
+			return this[PRIVATE.history];
+		}else{
+			return this[PRIVATE.history][index];
+		}
 	}
 
 	ImageLayer.prototype.getHistoryLength = function(){ //获取操作记录长度
@@ -1671,7 +1701,7 @@
 		BRUSH.move(GLOBAL_CANVAS,this);
 
 	}
-	ImageLayer.prototype.mosaic = function(type='mosaic',value=null){
+	ImageLayer.prototype.mosaic = function(type='mosaic',value=null){ // 局部操作
 		/**
 		 *	通过GLOBAL_CANVAS代理鼠标事件
 		 */

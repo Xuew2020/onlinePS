@@ -33,19 +33,30 @@
 					<li>
 						<span>滤镜</span>
 						<ul class="nav-sub">
-							<li>黑白滤镜</li>
 							<li>反色滤镜</li>
+							<li>黑白底片</li>
+							<li>灰度滤镜</li>
+							<li>二值图像</li>
+							<li>柔化滤镜</li>
 							<li>复古滤镜</li>
-							<li>模糊滤镜</li>
+							<li>铅笔画</li>
+							<li>版画</li>
+							<li>黑白版画</li>
+							<li>熔铸滤镜</li>
+							<li>冰冻滤镜</li>
+							<li>镜像</li>
+							<li>降噪</li>
+							<li>美白</li>
+							<li>马赛克</li>
 						</ul>
 					</li>
 					<li>
-						<span>模糊</span>
+						<span>美颜</span>
 						<ul class="nav-sub">
-							<li>均值模糊</li>
-							<li>中值模糊</li>
-							<li>高斯模糊</li>
-							<li>双边模糊</li>
+							<li>图像柔化</li>
+							<li>图像模糊</li>
+							<li>污点修复</li>
+							<li>美白磨皮</li>
 							<li>马赛克</li>
 						</ul>
 					</li>
@@ -85,7 +96,7 @@
 					<li title="橡皮擦" id="xpc"><span class="iconfont">&#xe698;</span></li>
 					<li title="尺子" id="cz"><span class="iconfont">&#xe62c;</span></li>
 					<li title="滤镜" id="lj"><span class="iconfont">&#xe669;</span></li>
-					<li title="滤波器" id="mh"><span class="iconfont">&#xe62a;</span></li>
+					<li title="图像滤波" id="mh"><span class="iconfont">&#xe62a;</span></li>
 					<li title="文本工具" id="wbgj"><span class="iconfont">&#xe601;</span></li>
 					<li title="绘图工具" id="htgj"><span class="iconfont">&#xe606;</span></li>
 				</ul>
@@ -390,84 +401,7 @@
 	</template>
 	<!-- 滤镜面板 -->
 	<template id="lj-template">
-		<div id="lj-panel" class="panel">
-			<div>
-				<div class="lj-style">
-					<img src="pic/ah.jpg" alt=""/>
-					<p>黑白</p>
-				</div>
-				<div class="lj-style">
-					<img src="pic/ah.jpg" alt=""/>
-					<p>黑白</p>
-				</div>
-			</div>
-			<div>
-				<div class="lj-style">
-					<img src="pic/ah.jpg" alt=""/>
-					<p>黑白</p>
-				</div>
-				<div class="lj-style">
-					<img src="pic/ah.jpg" alt=""/>
-					<p>黑白</p>
-				</div>
-			</div>
-			<div>
-				<div class="lj-style">
-					<img src="pic/ah.jpg" alt=""/>
-					<p>黑白</p>
-				</div>
-				<div class="lj-style">
-					<img src="pic/ah.jpg" alt=""/>
-					<p>黑白</p>
-				</div>
-			</div>
-			<div>
-				<div class="lj-style">
-					<img src="pic/ah.jpg" alt=""/>
-					<p>黑白</p>
-				</div>
-				<div class="lj-style">
-					<img src="pic/ah.jpg" alt=""/>
-					<p>黑白</p>
-				</div>
-			</div>
-			<div>
-				<div class="lj-style">
-					<img src="pic/ah.jpg" alt=""/>
-					<p>黑白</p>
-				</div>
-				<div class="lj-style">
-					<img src="pic/ah.jpg" alt=""/>
-					<p>黑白</p>
-				</div>
-			</div>
-			<div>
-				<div class="lj-style">
-					<img src="pic/ah.jpg" alt=""/>
-					<p>黑白</p>
-				</div>
-				<div class="lj-style">
-					<img src="pic/ah.jpg" alt=""/>
-					<p>黑白</p>
-				</div>
-			</div>
-			<div>
-				<div class="lj-style">
-					<img src="pic/ah.jpg" alt=""/>
-					<p>黑白</p>
-				</div>
-				<div class="lj-style">
-					<img src="pic/ah.jpg" alt=""/>
-					<p>黑白</p>
-				</div>
-			</div>
-			<div>
-				<div class="lj-style">
-					<img src="pic/ah.jpg" alt=""/>
-					<p>黑白</p>
-				</div>
-			</div>
-		</div>
+		<div id="lj-panel" class="panel"></div>
 	</template>
 	<!-- 模糊面板 -->
 	<template id="mh-template">
@@ -479,21 +413,6 @@
 			<div>
 				<label for="mh-kernel">核大小：</label>
 				<input type="range" id="mh-kernel" min="1" max="10" value="1" step="1" />
-			</div>
-			<div>
-				<span>图像柔化</span>
-			</div>
-			<div>
-				<span>图像模糊</span>
-			</div>
-			<div>
-				<span>污点修复</span>
-			</div>
-			<div>
-				<span>美颜祛斑</span>
-			</div>
-			<div>
-				<span>马赛克</span>
 			</div>
 		</div>
 	</template>

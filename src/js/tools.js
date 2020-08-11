@@ -450,14 +450,25 @@
 		// 滤镜
 
 		let base_dir = "./src/images/";
-		let lj_styles = ["invert","blackAndWhiteInverse","grayScale","binary","blur","sepia","pancil",
-						 "woodcarving_1","woodcarving_2","casting","freezing","medianBlur","gaussianBlur",
-						 "bilateralFilter","mosaic"];
-		let lj_names = ["反色","黑白底片","灰度图像","二值图像·","柔化效果","复古","铅笔画",
-						"版画","黑白版画","熔铸","冰冻","降噪","模糊效果","美颜祛斑","马赛克"];
-		let lj_imgsrc = ["invert.png","blackAndWhiteInverse.png","grayScale.png","binary.png","blur.png",
-						 "sepia.png","pancil.png","woodcarving_1.png","woodcarving_2.png","casting.png",
-						 "freezing.png","medianBlur.png","gaussianBlur.png","bilateralFilter.png","mosaic.png"];
+		let lj_types = [
+							{style:"invert",name:"反色",src:"invert.png"},
+							{style:"blackAndWhiteInverse",name:"黑白底片",src:"blackAndWhiteInverse.png"},
+							{style:"grayScale",name:"灰度化",src:"grayScale.png"},
+							{style:"binary",name:"二值化",src:"binary.png"},
+							{style:"blur",name:"柔化",src:"blur.png"},
+							{style:"sepia",name:"复古",src:"sepia.png"},
+							{style:"pancil",name:"铅笔画",src:"pancil.png"},
+							{style:"woodblock_1",name:"版画",src:"woodblock_1.png"},
+							{style:"woodblock_2",name:"黑白版画",src:"woodblock_2.png"},
+							{style:"casting",name:"熔铸",src:"casting.png"},
+							{style:"freezing",name:"冰冻",src:"freezing.png"},
+							{style:"mirroring",name:"镜像",src:"mirroring.png"},
+							{style:"medianBlur",name:"降噪",src:"medianBlur.png"},
+							{style:"gaussianBlur",name:"模糊",src:"gaussianBlur.png"},
+							{style:"bilateralFilter",name:"美白",src:"bilateralFilter.png"},
+							{style:"mosaic",name:"马赛克",src:"mosaic.png"},
+							// {style:"",name:"",src:""},
+					];
 		that.$("#lj")[0].addEventListener('click',function(){
 			
 			initRoot();
@@ -470,31 +481,53 @@
 				template.remove();				
 
 				lj_panel = root.querySelector('#lj-panel');
-				lj_panel.querySelectorAll(".lj-style").forEach((el,index)=>{
-					let img = el.querySelector("img");
-					let name = el.querySelector("p");
-					img.src = base_dir+lj_imgsrc[index];
-					img.alt = lj_names[index];
-					name.textContent = lj_names[index];
-					el.addEventListener('click',function(){
-						if(lj_styles[index] === "woodcarving_1"){
-							that.currentImg.filter("woodcarving",1);
-						}else if(lj_styles[index] === "woodcarving_2"){
-							that.currentImg.filter("woodcarving",2);
-						}else{
-							that.currentImg.filter(lj_styles[index]);
-						}
-					});
-				});
+				
+				// 创建滤镜模块 
+				let col = 2;
+				let type_len = lj_types.length;
+				for(let i=0; i<type_len; i+=col){
+					let parent = document.createElement('div');
+					for(let j=i; j<col+i&&j<type_len; j++){
+						let div = document.createElement('div');
+						let img = document.createElement('img');
+						let p = document.createElement('p');
 
+						div.className = "lj-style";
+						img.src = base_dir+lj_types[j].src;
+						img.alt = lj_types[j].name;
+						p.textContent = lj_types[j].name;
+						div.addEventListener('click',function(){
+							if(lj_types[j].style === "woodblock_1"){
+								that.currentImg.filter("woodblock",1);
+							}else if(lj_types[j].style === "woodblock_2"){
+								that.currentImg.filter("woodblock",2);
+							}else{
+								that.currentImg.filter(lj_types[j].style);
+							}
+						});
+
+						div.appendChild(img);
+						div.appendChild(p);
+						parent.appendChild(div);
+					}
+					lj_panel.appendChild(parent);
+				}
 			}else{
 				lj_panel.style.display = "block";
 			}
 			
 		});
 
-		// 模糊
-		let mh_styles = ["blur","gaussianBlur","medianBlur","bilateralFilter","mosaic"];
+		// 模糊 -- 美颜效果
+		let mh_types = [
+							{style:"blur",name:"图像柔化"},
+							{style:"gaussianBlur",name:"图像模糊"},
+							{style:"sharpen",name:"图像锐化"},
+							{style:"medianBlur",name:"污点修复"},
+							{style:"bilateralFilter",name:"美白磨皮"},
+							{style:"mosaic",name:"马赛克"},
+							{style:"restore",name:"局部还原"},
+					];
 		that.$("#mh")[0].addEventListener('click',function(){
 			
 			initRoot();
@@ -506,6 +539,7 @@
 				root.appendChild(template.content);
 				template.remove();				
 
+				mh_panel = root.querySelector('#mh-panel');
 				let mh_size = root.querySelector("#mh-size");
 				let mh_kernel = root.querySelector("#mh-kernel");
 				mh_size.addEventListener('input',function(){
@@ -522,21 +556,42 @@
 					});
 				});
 
-				let mhs = root.querySelectorAll('#mh-panel>div:nth-of-type(n+3)');
-				mhs.forEach((el,index,arrays)=>{
-					el.addEventListener('click',function(){
+				// 创建模块
+				let type_len = mh_types.length;
+				for(let i=0; i<type_len; i++){
+					let div = document.createElement('div');
+					let span = document.createElement('span');
+					span.textContent = mh_types[i].name;
+					div.addEventListener('click',function(){
+						let arrays = root.querySelectorAll('#mh-panel>div:nth-of-type(n+3)');
 						Array.prototype.some.call(arrays,(el,index)=>{
 							if(el.classList.contains('active')){
 								el.classList.remove('active');
 								return true;
 							}
 						});
-						el.classList.add("active");
-						let value = Number.parseInt(root.querySelector("#mh-kernel").value);
+						this.classList.add("active");
+						let kernel = root.querySelector("#mh-kernel");
+						let number = Number.parseInt(kernel.value);
 						that.resolve();
-						that.currentImg.mosaic(mh_styles[index],value);
+						// console.log(mh_types[i].style);
+						let value;
+						switch(mh_types[i].style){
+							case "sharpen":
+								value = {rate:(number*5)/kernel.max,type:1};
+								break;
+							case "restore":
+								value = that.currentImg.getHistory(that.historyIndex.currentHistory).imageData.data;
+								break;
+							default:
+								value = number;
+						}
+						// console.log(value);
+						that.currentImg.mosaic(mh_types[i].style,value);
 					});
-				});
+					div.appendChild(span);
+					mh_panel.appendChild(div);
+				}
 			}else{
 				mh_panel.style.display = "block";
 			}
