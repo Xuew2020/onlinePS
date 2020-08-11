@@ -33,7 +33,7 @@ let pageConfig = {
 		});
 
 		// 图像 
-		let tx_els = ["#txbh","#txzq"];
+		let tx_els = ["#txbh","#txzq","#mh"];
 		menus[1].querySelectorAll('li').forEach((el,index)=>{
 			el.addEventListener('click',function(){
 				that.$(tx_els[index])[0].click();
@@ -47,16 +47,9 @@ let pageConfig = {
 			});
 		});
 
-		// 模糊
-		menus[3].querySelectorAll('li').forEach((el)=>{
-			el.addEventListener('click',function(){
-				that.$('#mh')[0].click();
-			});
-		});
-
 		//工具
 		let gj_els = ["#jq","#kt","#hb","#cz","#xpc","#ssq","#yqt","#wbgj","#htgj"];
-		menus[4].querySelectorAll('li').forEach((el,index)=>{
+		menus[3].querySelectorAll('li').forEach((el,index)=>{
 			el.addEventListener('click',function(){
 				that.$(gj_els[index])[0].click();
 			});

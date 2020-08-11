@@ -12,6 +12,9 @@
 	const GLOBAL_CXT = GLOBAL_CANVAS.getContext('2d');							
 	let isGlobalCanvasInit = false; 					//是否初始化了全局画布
 	ImageLayer.globalInfo = {};							//全局信息 --- 外部使用
+
+	/********** 背景图 *********/
+	const BACKGROUND_CANVAS = document.createElement('canvas');
 	
 	/********** 图像变换及剪切 *********/
 	let operRect = [];							//存放矩形边框顶点信息
@@ -1025,10 +1028,9 @@
 			if(value.length !== data.length){	// 不做处理直接退出
 				return true;
 			}
-			data.forEach((value,index,array)=>{
+			data.forEach((v,index,array)=>{
 				array[index] = value[index];
 			});
-			console.log("ok");
 			return true;
 		}
 	}
@@ -1148,6 +1150,7 @@
 		this.baseInfo.historyLength = 0;
 
 		if(isGlobalCanvasInit === false){ //第一次初始化，初始化全局画布
+			this.parentNode.appendChild(BACKGROUND_CANVAS);
 			this.parentNode.appendChild(GLOBAL_CANVAS);
 			isGlobalCanvasInit = true;
 			let parentInfo = this.parentNode.getBoundingClientRect();
@@ -1156,6 +1159,32 @@
 			GLOBAL_CANVAS.style.position = "absolute";
 			GLOBAL_CANVAS.style.zIndex = "1000";
 			// GLOBAL_CANVAS.style.display = "none";
+
+			// 初始化背景图
+			BACKGROUND_CANVAS.width = parentInfo.width;
+			BACKGROUND_CANVAS.height = parentInfo.height;
+			BACKGROUND_CANVAS.style.position = "absolute";
+			BACKGROUND_CANVAS.style.zIndex = "-1";
+			let BACKGROUND_CXT = BACKGROUND_CANVAS.getContext("2d");
+			let bg = document.createElement("canvas");
+			let bgCxt = bg.getContext("2d");
+			bg.width = 20;
+			bg.height = 20;
+			bgCxt.fillStyle = "#2d2f34";
+			bgCxt.beginPath();
+			bgCxt.fillRect(0,0,10,10);
+			bgCxt.beginPath();
+			bgCxt.fillRect(10,10,20,20);
+			bgCxt.fillStyle = "#1d2023";
+			bgCxt.beginPath();
+			bgCxt.fillRect(10,0,20,10);
+			bgCxt.beginPath();
+			bgCxt.fillRect(0,10,10,20);
+
+			BACKGROUND_CXT.fillStyle = BACKGROUND_CXT.createPattern(bg,"repeat");
+			BACKGROUND_CXT.beginPath();
+			BACKGROUND_CXT.fillRect(0,0,BACKGROUND_CANVAS.width,BACKGROUND_CANVAS.height);
+
 			ImageLayer.globalInfo.clipRect = {
 				x:0,
 				y:0,
@@ -1211,10 +1240,24 @@
 		img.src = source;
 		img.crossOrigin = 'anonymous'; // 跨域资源共享
 		img.onload = ()=>{
-			this[PRIVATE.width] = img.width;
-			this[PRIVATE.height] = img.height;
+			let {width,height} = img;
+			let scale = 2/3;
+			let info = this.parentNode.getBoundingClientRect();
+			if(img.width>info.width || img.height>info.height){
+				if(img.width>img.height){
+					height = info.width*img.height/img.width;
+					width = info.width;
+				}else{
+					width = info.height*img.height/img.width;
+					height = info.height;
+				}
+				width = width*scale;
+				height = height*scale;
+			}
+			this[PRIVATE.width] = width;
+			this[PRIVATE.height] = height;
 			this[PRIVATE.init](rectInfo);
-			this.imageCxt.drawImage(img,0,0);
+			this.imageCxt.drawImage(img,0,0,width,height);
 			this[PRIVATE.store]();
 		};
 	}

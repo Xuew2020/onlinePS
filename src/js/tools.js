@@ -168,6 +168,7 @@
 		});
 
 		// 图像增强
+		let txzq_id = null;
 		let txzq_styles = ["sharpen","hsv","hsv","brightness","contrast","colorChannel","colorChannel","colorChannel","opacity"];
 		that.$("#txzq")[0].addEventListener('click',function(){
 
@@ -193,6 +194,10 @@
 				let opers = root.querySelectorAll("#txzq-panel>div>input[type=range]");
 				opers.forEach((el,index)=>{
 					el.addEventListener('input',function(){
+						if(txzq_id!==null && txzq_id!==index){
+							that.resolve();
+						}
+						txzq_id = index;
 						let value;
 						// console.log(this.id);
 						switch(this.id){
@@ -586,7 +591,7 @@
 							default:
 								value = number;
 						}
-						// console.log(value);
+						// console.log(that.historyIndex.currentHistory);
 						that.currentImg.mosaic(mh_types[i].style,value);
 					});
 					div.appendChild(span);
