@@ -751,6 +751,7 @@
 		// 创建节点
 		let li = document.createElement('li');
 		li.setAttribute("data-index",this.imgArray.length-1);
+		li.title = name;
 		let showspan = document.createElement("span");
 		showspan.className = "iconfont show-canvas icon-yanjing";
 		let canvas = document.createElement('canvas');
@@ -1003,7 +1004,7 @@
 			x:{
 				set:function(value){
 					this._value = value;
-					el_x.value = value;
+					el_x.value = value.toFixed(2);
 				},
 				get:function(){
 					return this._value;
@@ -1012,7 +1013,7 @@
 			y:{
 				set:function(value){
 					this._value = value;
-					el_y.value = value;
+					el_y.value = value.toFixed(2);
 				},
 				get:function(){
 					return this._value;
@@ -1021,7 +1022,7 @@
 			width:{
 				set:function(value){
 					this._value = value;
-					el_width.value = value;
+					el_width.value = value.toFixed(2);
 				},
 				get:function(){
 					return this._value;
@@ -1030,7 +1031,7 @@
 			height:{
 				set:function(value){
 					this._value = value;
-					el_height.value = value;
+					el_height.value = value.toFixed(2);
 				},
 				get:function(){
 					return this._value;
@@ -1039,7 +1040,7 @@
 			rotateAngle:{
 				set:function(value){
 					this._value = value;
-					el_rotate.value = value;
+					el_rotate.value = value.toFixed(2);
 				},
 				get:function(){
 					return this._value;

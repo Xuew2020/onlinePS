@@ -333,6 +333,9 @@ div::-webkit-scrollbar-track{/*滚动条里面轨道*/
 	overflow: hidden;
 	font-size: 13px;
 	text-indent: 1em;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow;
 }
 #layer-content>ul>li>canvas{
 	border: 1px solid white;
