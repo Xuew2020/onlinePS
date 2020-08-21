@@ -276,6 +276,18 @@
 		imageMerge(imageLayers);
 		// GLOBAL_CANVAS.style.display = "inline";
 
+		// 放大镜
+		GLOBAL_CANVAS.style.cursor = "crosshair";
+		let tmpData = GLOBAL_CXT.getImageData(0,0,GLOBAL_CANVAS.width,GLOBAL_CANVAS.height);
+		let tmpCanvas = document.createElement('canvas');
+		let tmpcxt = tmpCanvas.getContext("2d");
+		let range = 50;  		// 放大的区域大小
+		let scale = 10;			// 放大的倍数
+		let offset = 50;		// 放大镜距离鼠标的偏移量
+		let r = 50;				// 放大镜半径
+		tmpCanvas.width = range;
+		tmpCanvas.height = range;
+
 		GLOBAL_CANVAS.onmousedown = function(e){
 			e = e || window.event;
 			let info = this.getBoundingClientRect();
@@ -293,6 +305,38 @@
 			}
 			let HEX = `#${rgb[0]}${rgb[1]}${rgb[2]}`;
 			callback(x,y,HEX);
+		}
+		GLOBAL_CANVAS.onmousemove = function(e){
+			e = e || window.event;
+			let info = this.getBoundingClientRect();
+			let x = e.clientX - info.x;
+			let y = e.clientY - info.y;
+
+			let data = GLOBAL_CXT.getImageData(x-range/2,y-range/2,range,range);
+			tmpcxt.putImageData(data,0,0);
+			GLOBAL_CXT.clearRect(0,0,GLOBAL_CANVAS.width,GLOBAL_CANVAS.height);
+			GLOBAL_CXT.putImageData(tmpData,0,0);
+			GLOBAL_CXT.beginPath();
+			GLOBAL_CXT.save();
+			GLOBAL_CXT.arc(x+offset,y+offset,r,0,2*Math.PI);
+			GLOBAL_CXT.clip();
+			GLOBAL_CXT.drawImage(tmpCanvas,x+offset-(range*scale)/2,y+offset-(range*scale)/2,range*scale,range*scale);
+			GLOBAL_CXT.lineWidth = 1;
+			GLOBAL_CXT.strokeStyle = "rgba(255,255,255,0.8)";
+			GLOBAL_CXT.beginPath();
+			GLOBAL_CXT.moveTo(x+offset-r,y+offset);
+			GLOBAL_CXT.lineTo(x+offset+r,y+offset);
+			GLOBAL_CXT.stroke();
+			GLOBAL_CXT.beginPath();
+			GLOBAL_CXT.moveTo(x+offset,y+offset-r);
+			GLOBAL_CXT.lineTo(x+offset,y+offset+r);
+			GLOBAL_CXT.stroke();
+			GLOBAL_CXT.beginPath();
+			GLOBAL_CXT.arc(x+offset,y+offset,r,0,2*Math.PI);
+			GLOBAL_CXT.lineWidth = 3;
+			GLOBAL_CXT.strokeStyle = "gray";
+			GLOBAL_CXT.stroke();
+			GLOBAL_CXT.restore();
 		}
 	}
 
