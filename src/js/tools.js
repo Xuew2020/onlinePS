@@ -88,11 +88,12 @@
 		});
 
 		that.$("#download .model-footer>button")[1].addEventListener('click',function(){
+			let name = that.$('#download input[name=img_name]')[0].value;
 			let type = "image/"+that.$("#noun_suffix")[0].textContent.substring(1);
 			let quality = that.$("#quality_text")[0].textContent.match(/\d+/)[0];
 			let width = that.$("#img_width")[0].value;
 			let height = that.$("#img_height")[0].value;
-			ImageLayer.download(that.currentImg,that.imgArray,width,height,type,quality);
+			ImageLayer.download(that.currentImg,that.imgArray,width,height,name,type,quality);
 		});
 
 		// 撤销/确定 

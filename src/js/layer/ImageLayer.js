@@ -393,8 +393,16 @@
 	}
 
 	/************* 下载 *************/
-	ImageLayer.download = function(imageLayer,imageLayers,width,height,type = "image/png",quality = 1){
+	function proxyDownload(url, name = new Date().getTime()) {
+		let proxy = document.createElement('a');
+		proxy.download = name;
+		proxy.href = url;
+		proxy.style.display = "none";
+		proxy.click();
+		proxy = null;
+	}
 
+	ImageLayer.download = function(imageLayer,imageLayers,width,height,name,type = "image/png",quality = 1){
 		let data = ImageLayer.getLayersInfo(imageLayer,imageLayers,type,quality);
 		let url = data.src;
 		if(data.width !== width || data.height !== height){
@@ -407,10 +415,10 @@
 			img.onload = function(){
 				cxt.drawImage(img,0,0,width,height);
 				url = canvas.toDataURL(type);
-				window.location = url;
+				proxyDownload(url, name);
 			}
 		}else{
-			window.location = url;
+			proxyDownload(url, name);
 		}
 	}
 
