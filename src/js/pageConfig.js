@@ -155,6 +155,9 @@ let pageConfig = {
 				};
 			});
 		});
+		layer_oper[1].addEventListener('click', function() {
+			menus[0].querySelectorAll('li')[0].click();
+		});
 		layer_oper[2].addEventListener('click', function () {
 			layer_content = that.$('#layer-content>ul>li');
 			layer = that.$('#contains>div');
