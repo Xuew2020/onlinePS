@@ -119,7 +119,6 @@
 
 		// 清理面板
 		function initRoot(){
-			console.log(root.querySelectorAll('.panel'));
 			root.querySelectorAll('.panel').forEach((el)=>{
 				el.style.display = "none";
 			});
@@ -133,7 +132,6 @@
 			// 	return;
 			// }
 
-			// console.log(that.currentImg);
 			that.currentImg.transform();
 
 			// 设置面板内容
@@ -200,7 +198,6 @@
 						}
 						txzq_id = index;
 						let value;
-						// console.log(this.id);
 						switch(this.id){
 							case "sharpen":
 								value = {rate:this.value,type:1};
@@ -580,7 +577,6 @@
 						let kernel = root.querySelector("#mh-kernel");
 						let number = Number.parseInt(kernel.value);
 						that.resolve();
-						// console.log(mh_types[i].style);
 						let value;
 						switch(mh_types[i].style){
 							case "sharpen":
@@ -592,7 +588,6 @@
 							default:
 								value = number;
 						}
-						// console.log(that.historyIndex.currentHistory);
 						that.currentImg.mosaic(mh_types[i].style,value);
 					});
 					div.appendChild(span);
@@ -603,7 +598,6 @@
 			}
 			let mh = root.querySelector('#mh-panel>div:nth-of-type(n+3).active');
 			if(mh){
-				console.log(mh);
 				mh.classList.remove("active");
 			}
 			let mh_size = root.querySelector("#mh-size");
@@ -721,7 +715,6 @@
 			}
 			let htgj = root.querySelector('#htgj-panel>div.active');
 			if(htgj){
-				console.log(1);
 				htgj.classList.remove("active");
 			}
 		});
@@ -796,7 +789,6 @@
 
 			//触发原本选中的操作
 			if(that.currentImg instanceof ImageLayer){
-				console.log("123");
 				Array.prototype.some.call(that.$('#main-nav>ul>li'),(el)=>{
 					if(el.classList.contains("active")){
 						el.click();
@@ -885,7 +877,6 @@
 				this.classList.add('active');
 
 				that.currentImg.restore(index);
-				// console.log(isRememberCurrentHistory);
 
 				if(isRememberCurrentHistory === true){
 					that.historyIndex.currentHistory = index; // 当前选中的历史记录
@@ -938,7 +929,6 @@
 		}
 	},
 	urlLoad:function(el,src){
-		console.log(src);
 		this.currentImg = new ImageLayer(el);
 		this.currentImg.pageInfo = {
 			lisernerFlag:{},	
@@ -1143,7 +1133,6 @@
 		let el_cxt = el.getContext("2d");
 		Object.defineProperty(this.currentImg.baseInfo,'imageData',{
 			set:function(value){
-				// console.log(value);
 				cxt.clearRect(0,0,width,height);
 				cxt.putImageData(value.imageData,value.position.x,value.position.y);
 				el_cxt.clearRect(0,0,el.width,el.height);
@@ -1157,7 +1146,6 @@
 		let that = this;
 		Object.defineProperty(this.currentImg.baseInfo,'historyLength',{
 			set:function(value){
-				// console.log(value);
 				that.addHistory(that.currentImg.getHistory());
 			}
 		});
@@ -1222,7 +1210,6 @@
 			return;
 		}
 		if(this.currentImg.getStatus() !== ImageLayer.FREEING && this.historyIndex.currentHistory !== this.currentImg.getHistoryLength()){
-			console.log("update");
 			this.currentImg.removeHistory(this.historyIndex.currentHistory);
 			this.historyIndex.historyLength = this.currentImg.getHistoryLength(); // 更新历史记录长度
 		}

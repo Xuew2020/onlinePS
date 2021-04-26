@@ -28,7 +28,6 @@
 		let cxt = canvas.getContext('2d');
 		// cxt.clearRect(0,0,canvas.width,canvas.height);
 		
-		// console.log("drawRect");
 		/********** 画矩形边框 *********/
 		cxt.save();
 		cxt.beginPath();
@@ -48,7 +47,6 @@
 	operPoint.control = function(oldX,oldY,canvas,textLayer){
 		let operRect = textLayer[PRIVATE.operRect];
 		let pointNum = operRect.length; //顶点数
-		// console.log(operRect);
 		let cxt = canvas.getContext('2d');
 		let dir = ["nw-resize","ne-resize"];
 		for(let i=0; i<pointNum; i++){ //判断鼠标是否落在矩形四个顶点上 --- 缩放
@@ -168,7 +166,6 @@
 			e = e || window.event;
 			let x = e.clientX - this.textArea.offsetLeft;
 			let y = e.clientY - this.textArea.offsetTop;
-			console.log(x,y);
 			TEXT_PROXY.style.left = `${50}px`;
 			TEXT_PROXY.style.top = `${50}px`;
 			TEXT_PROXY.value = this[PRIVATE.words];
@@ -214,11 +211,9 @@
 				}
 
 				// this.onmouseenter = ()=>{
-				// 	console.log("onmouseenter");
 				// 	that[PRIVATE.drawText](true);
 				// }
 				// this.onmouseleave = ()=>{
-				// 	// console.log("onmouseleave");
 				// 	that[PRIVATE.drawText](false);
 				// }
 				resizeRect(this,that);
@@ -313,7 +308,6 @@
 		let x = operRect[0].x+padding;
 		let y = operRect[0].y+padding;
 		let rectWidth = operRect[1].x-operRect[0].x-2*padding;
-		// console.log(rectWidth);
 
 		this.textCxt.font = `${fontWeight} ${fontSize} ${fontFamily}`;
 		this.textCxt.textBaseline = "top";

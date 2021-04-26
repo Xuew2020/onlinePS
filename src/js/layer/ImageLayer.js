@@ -63,9 +63,7 @@
 		ImageLayer.globalInfo.clipRect.width = rectWidth;
 		ImageLayer.globalInfo.clipRect.height = rectHeight;
 
-		// console.log(ImageLayer.globalInfo.clipRect);
 
-		// console.log(rectWidth,rectHeight);
 		let widthStep = rectWidth/gridNum;
 		let heightStep = rectHeight/gridNum;
 		for(let i=1;i<gridNum;i++){
@@ -86,7 +84,6 @@
 	}
 	operPoint.control = function(oldX,oldY,canvas,scaleCallBack,translateCallBack){
 		let pointNum = operRect.length; //顶点数
-		// console.log(operRect);
 		let cxt = canvas.getContext('2d');
 		let dir = ["nw-resize","ne-resize"];
 		for(let i=0; i<pointNum; i++){ //判断鼠标是否落在矩形四个顶点上 --- 缩放
@@ -126,7 +123,6 @@
 		}
 		cxt.closePath();
 		if(cxt.isPointInPath(oldX,oldY)){
-			// console.log("translate");
 			canvas.style.cursor = "move";
 			canvas.onmousemove = function(e){
 				e = e || window.event;
@@ -135,7 +131,6 @@
 				let newY = e.clientY - rect.y;
 				let offsetX = newX - oldX;
 				let offsetY = newY - oldY;
-				// console.log(offsetX,offsetY);
 				[oldX,oldY] = [newX,newY];
 				operRect.forEach(function(value,index,array){
 					array[index].x += offsetX;
@@ -359,7 +354,6 @@
 		}
 		imageMerge(imageLayers);
 		quality = Number.parseInt(quality,10)/100;
-		console.log(quality);
 		let minX=Infinity, minY=Infinity, maxX=0, maxY=0;
 		imageLayers.forEach((value)=>{
 			let info = value[PRIVATE.rectInfo];
@@ -378,7 +372,6 @@
 		let cxt = canvas.getContext('2d');
 		canvas.width = width;
 		canvas.height = height; 
-		console.log(minX,minY,maxX,maxY,width,height);
 		let imageData = GLOBAL_CXT.getImageData(minX,minY,width,height);
 		cxt.putImageData(imageData,0,0);
 		GLOBAL_CXT.clearRect(0,0,GLOBAL_CANVAS.width,GLOBAL_CANVAS.height);
@@ -618,7 +611,6 @@
 			/* 当前像素与周围像素对比，
 			   判断是否有一点差值绝对值大于等于阈值，
 			   若有，则为轮廓当前设为白色，反之设为黑色 */
-			console.log(value);
 			let {data,width,height} = imageData;
 			let threshold = value;
 			let nextPixels = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]; // 周围8个位置
@@ -1330,7 +1322,6 @@
 		this[PRIVATE.rectInfo].y = y;
 		this[PRIVATE.rectInfo].width = width;
 		this[PRIVATE.rectInfo].height = height;
-		// console.log(this[PRIVATE.rectInfo]);
 		this.baseInfo.x = x;
 		this.baseInfo.y = y;
 		this.baseInfo.width = width;
@@ -1430,14 +1421,11 @@
 			this.saveClipArea();
 		}
 		if(this[PRIVATE.status] === ImageLayer.IMAGEMATTING){
-			console.log("IMAGEMATTING");
 			this.saveImageMattingArea();
 		}
 		if(this[PRIVATE.isClearImageArea] === true){
 			this.imageCxt.clearRect(0,0,this.imageArea.width,this.imageArea.height);
 		}
-
-		console.log("resolve");
 
 		this.imageCxt.drawImage(this.operArea,0,0);
 		this.imageArea.style.display = "inline"; // 显示图像区域
@@ -1459,7 +1447,6 @@
 		if(!FILTER.hasOwnProperty(type)){
 			return;
 		}
-		// console.log("filter");
 		/**
 		 * 缺少路径操作
 		 */
@@ -1583,7 +1570,6 @@
 
 		// 记录旋转角度
 		this.baseInfo.rotateAngle = angle;
-		// console.log(this.baseInfo);
 
 		/***  计算变换后最小外接矩形的长宽 ***/
 		let absAngle = Math.abs(angle%90)*Math.PI/180;
@@ -1738,7 +1724,6 @@
 		GLOBAL_CANVAS.style.cursor = "crosshair";
 		GLOBAL_CANVAS.onmousedown = function(e){
 			let info = this.getBoundingClientRect();
-			console.log("clip");
 			e = e || window.event;
 			let oldX = e.clientX - info.x;
 			let oldY = e.clientY - info.y;
@@ -1843,7 +1828,6 @@
 		 *	3、清除操作区域
 		 */
 		this.filter(type,value,true);
-		console.log("mosaic");
 		let pattern = this.operCxt.createPattern(this.operArea,"repeat");
 		BRUSH.pattern = pattern;
 		BRUSH.color = "transparent";
@@ -1881,7 +1865,6 @@
 	}
 	ImageLayer.prototype[PRIVATE.brushLineTo] = function(point){ //画线
 		let info = this[PRIVATE.rectInfo];
-		// console.log("drawPoint");
 		if(point.x<info.x || point.x>info.x+info.width){
 			this.operCxt.beginPath();
 			return;
@@ -2015,7 +1998,6 @@
 		
 		function checkPoint(x,y){	// 判断点是否在图像上
 			let rectInfo = that[PRIVATE.rectInfo];
-			// console.log(x,y,rectInfo);
 			if(x<rectInfo.x || x>rectInfo.x+rectInfo.width || y<rectInfo.y || y>rectInfo.y+rectInfo.height){
 				return false;
 			}
@@ -2063,7 +2045,6 @@
 					return;
 				}
 				let dist = Math.sqrt((PATH[PATH.length-1].x-x)**2+(PATH[PATH.length-1].y-y)**2);
-				console.log(dist);
 				if(dist>=interval){
 					PATH.push(new operPoint(x,y));
 				}
@@ -2136,7 +2117,6 @@
 			return;
 		}
 		this[PRIVATE.status] = ImageLayer.PAINTBUCKET;
-		// console.log(replace_color,offset);
 		offset = Number.parseInt(offset,10);
 		this.operCxt.drawImage(this.imageArea,0,0);
 		this.imageArea.style.display = "none";
