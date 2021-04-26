@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<title>在线图像编辑器</title>
 	<meta charset="utf-8" />
 	<link rel="stylesheet" type="text/css" href="src/css/style.css">
 	<link rel="stylesheet" type="text/css" href="src/css/iconfont.css">
 </head>
-<body oncontextmenu="return false" onselectstart ="return false" >
+
+<body oncontextmenu="return false" onselectstart="return false">
 	<div id="wrapper">
 		<header id="header">
 			<input type="file" accept="image/*" name="imageFile" style="display: none;" />
@@ -129,16 +131,16 @@
 		</main>
 		<footer id="footer">
 			<div class="splitter-left"></div>
-				<div id="content-info">
-					<div id="image-size">1200*1900px</div>
-					<div id="pos-info">X：<span>50</span>Y：<span>50</span></div>
-					<div id="scale">
-						<span class="iconfont">&#xe6c0;</span>
-						<input type="range" name="range" min="0.1" max="5" step="0.1" value="1" />
-						<span class="iconfont">&#xe684;</span>
-						<input type="text" name="text" value="100%">
-					</div>
+			<div id="content-info">
+				<div id="image-size">1200*1900px</div>
+				<div id="pos-info">X：<span>50</span>Y：<span>50</span></div>
+				<div id="scale">
+					<span class="iconfont">&#xe6c0;</span>
+					<input type="range" name="range" min="0.1" max="5" step="0.1" value="1" />
+					<span class="iconfont">&#xe684;</span>
+					<input type="text" name="text" value="100%">
 				</div>
+			</div>
 			<div class="splitter-right toggle-show"></div>
 		</footer>
 	</div>
@@ -182,7 +184,7 @@
 			</div>
 			<div class="splitter-right"></div>
 			<div class="model-content">
-				<div id="download_img" >
+				<div id="download_img">
 					<img src="" alt="缩略图" />
 				</div>
 				<div id="download_oper">
@@ -227,19 +229,19 @@
 			</div>
 			<div>
 				<label for="img-height">图像长度：</label>
-				<input type="number" id="img-height" min="0" disabled/>
+				<input type="number" id="img-height" min="0" disabled />
 			</div>
 			<div>
 				<label for="rotateAngle">旋转角度：</label>
-				<input type="number" id="rotateAngle" min="-360" max="360" value="0" disabled/>
+				<input type="number" id="rotateAngle" min="-360" max="360" value="0" disabled />
 			</div>
 			<div>
 				<label for="img-posX">图像位置(X)：</label>
-				<input type="number" id="img-posX" min="0" disabled/>
+				<input type="number" id="img-posX" min="0" disabled />
 			</div>
 			<div>
 				<label for="img-posY">图像位置(Y)：</label>
-				<input type="number" id="img-posY" min="0" disabled/>
+				<input type="number" id="img-posY" min="0" disabled />
 			</div>
 		</div>
 	</template>
@@ -293,15 +295,15 @@
 			</div>
 			<div>
 				<label for="jq-height">截取长度：</label>
-				<input type="number" id="jq-height" min="0" value="0" disabled/>
+				<input type="number" id="jq-height" min="0" value="0" disabled />
 			</div>
 			<div>
 				<label for="jq-posX">截取位置(X)：</label>
-				<input type="number" id="jq-posX" min="0" value="0" disabled/>
+				<input type="number" id="jq-posX" min="0" value="0" disabled />
 			</div>
 			<div>
 				<label for="jq-posY">截取位置(Y)：</label>
-				<input type="number" id="jq-posY" min="0" value="0" disabled/>
+				<input type="number" id="jq-posY" min="0" value="0" disabled />
 			</div>
 		</div>
 	</template>
@@ -318,15 +320,15 @@
 		<div id="ssq-panel" class="panel">
 			<div>
 				<label for="ssq-posX">目标位置(X)：</label>
-				<input type="number" id="ssq-posX" min="0" value="0" disabled/>
+				<input type="number" id="ssq-posX" min="0" value="0" disabled />
 			</div>
 			<div>
 				<label for="ssq-posY">目标位置(Y)：</label>
-				<input type="number" id="ssq-posY" min="0" value="0" disabled/>
+				<input type="number" id="ssq-posY" min="0" value="0" disabled />
 			</div>
 			<div>
 				<label for="ssq-color">目标颜色：</label>
-				<input type="color" id="ssq-color"/>
+				<input type="color" id="ssq-color" />
 			</div>
 		</div>
 	</template>
@@ -374,15 +376,15 @@
 		<div id="cz-panel" class="panel">
 			<div>
 				<label for="cz-start">起点坐标：</label>
-				<input type="text" id="cz-start" value="(0,0)" disabled/>
+				<input type="text" id="cz-start" value="(0,0)" disabled />
 			</div>
 			<div>
 				<label for="cz-end">终点坐标：</label>
-				<input type="text" id="cz-end" value="(0,0)" disabled/>
+				<input type="text" id="cz-end" value="(0,0)" disabled />
 			</div>
 			<div>
 				<label for="cz-dist">长度：</label>
-				<input type="text" id="cz-dist" value="0" disabled/>
+				<input type="text" id="cz-dist" value="0" disabled />
 			</div>
 		</div>
 	</template>
@@ -475,8 +477,8 @@
 	<script type="text/javascript" src="src/js/pageConfig.js"></script>
 	<script type="text/javascript" src="src/js/tools.js"></script>
 	<script type="text/javascript">
-		window.onload = ()=>{
-			if(navigator.userAgent.indexOf('AppleWebKit') === -1){
+		window.onload = () => {
+			if (navigator.userAgent.indexOf('AppleWebKit') === -1) {
 				document.body.removeChild(document.body.firstElementChild);
 				alert("页面涉及大量HTML5内容，请使用最新版谷歌浏览器打开！！！");
 				return;
@@ -486,4 +488,5 @@
 		}
 	</script>
 </body>
+
 </html>
