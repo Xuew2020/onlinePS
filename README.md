@@ -13,4 +13,9 @@
 
 + 图像美化效果：柔化、模糊、污点修复、美白磨皮、马赛克等功能，支持用户与界面交互，通过鼠标对图像进行局部处理。
 
+UI用到Web Component兼容性较差，建议使用最新版Chrome体验
+![效果图](https://github.com/Xuew2020/onlinePS/blob/master/preview.png)
+
+
+
 
